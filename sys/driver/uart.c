@@ -134,7 +134,58 @@ void UartSetParity(unsigned int port, int databits,int stopbits, char parity)
 	}
 
 	options.c_iflag = 0;
+	options.c_cflag &= ~CSIZE; 
+	switch (databits) {
+	case 5: options.c_cflag |= CS5; break;
+	case 6: options.c_cflag |= CS6; break;	
+	case 7:	options.c_cflag |= CS7; break;
+	case 8: options.c_cflag |= CS8; break;   
+	default: ErrorLog("invalid databits(%d)\n", databits); return;   
+	}
 
+	switch (parity) {
+	case 'n':
+	case 'N':    
+		options.c_cflag &= ~PARENB;   /* Clear parity enable */
+		options.c_iflag &= ~INPCK;     /* Enable parity checking */ 
+		break;  
+	case 'o':   
+	case 'O':     
+		options.c_cflag |= (PARODD | PARENB);
+		options.c_iflag |= INPCK;             /* Disnable parity checking */ 
+		break;  
+	case 'e':  
+	case 'E':   
+		options.c_cflag |= PARENB;     /* Enable parity */    
+		options.c_cflag &= ~PARODD;   
+		options.c_iflag |= INPCK;       /* Disnable parity checking */
+		break;
+	case 'S': 
+	case 's':  /*as no parity*/   
+	    options.c_cflag &= ~PARENB;
+		options.c_cflag &= ~CSTOPB;break;  
+	default: ErrorLog("invalid parity(%d)\n", parity); return;
+	}
+
+	switch (stopbits) {
+	case 1: options.c_cflag &= ~CSTOPB; break;  
+	case 2: options.c_cflag |= CSTOPB; break;
+	default: ErrorLog("invalid stopbits(%d)\n", stopbits); return;
+	}
+
+	options.c_iflag  &= ~(INLCR|IGNCR|ICRNL|IUCLC);  //add 2007-10-19
+	options.c_lflag  &= ~(ICANON | ECHO | ECHOE | ISIG);  /*Input*/
+	options.c_oflag  &= ~OPOST;   /*Output*/
+
+	tcflush(fd, TCIFLUSH);
+	options.c_cc[VTIME] = 0; /*15 seconds*/   
+	options.c_cc[VMIN] = 0; /* Update the options and do it NOW */
+
+	if(tcsetattr(fd, TCSANOW, &options) != 0) {
+		ErrorLog("tcsetattr fail\n");
+		return;
+	}
+	
 }
 
 /**
