@@ -1,0 +1,4 @@
+
+config system
+	option account_cnt '0'
+

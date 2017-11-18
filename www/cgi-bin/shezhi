@@ -1,0 +1,50 @@
+#!/bin/sh
+
+sn=''
+master_addr=''
+master_port=''
+master_passwd=''
+musicpwd=''
+musicmonth=''
+if [ -n "$QUERY_STRING" ]; then
+    	echo "Content-Type: application/json"
+    	echo ""
+	snexp=`echo $QUERY_STRING | cut -d'&' -f 1`
+	snkey=`echo $snexp | cut -d'=' -f 1`
+	snvalue=`echo $snexp | cut -d'=' -f 2`
+	uci -c/opt/ft set ftconfig.@ftconfig[0].sn=$snvalue
+	uci -c/opt/ft commit
+
+	master_addrexp=`echo $QUERY_STRING | cut -d'&' -f 2`
+	master_addrkey=`echo $master_addrexp | cut -d'=' -f 1`
+	master_addrvalue=`echo $master_addrexp | cut -d'=' -f 2`
+	uci -c/opt/ft set ftconfig.@ftconfig[0].master_addr=$master_addrvalue
+	uci -c/opt/ft commit
+
+	master_portexp=`echo $QUERY_STRING | cut -d'&' -f 3`
+	master_portkey=`echo $master_portexp | cut -d'=' -f 1`
+	master_portvalue=`echo $master_portexp | cut -d'=' -f 2`
+	uci -c/opt/ft set ftconfig.@ftconfig[0].master_port=$master_portvalue
+	uci -c/opt/ft commit
+
+	master_passwdexp=`echo $QUERY_STRING | cut -d'&' -f 4`
+	master_passwdkey=`echo $master_passwdexp | cut -d'=' -f 1`
+	master_passwdvalue=`echo $master_passwdexp | cut -d'=' -f 2`
+	uci -c/opt/ft set ftconfig.@ftconfig[0].master_passwd=$master_passwdvalue
+	uci -c/opt/ft commit
+
+	musicpwdexp=`echo $QUERY_STRING | cut -d'&' -f 5`
+	musicpwdkey=`echo $musicpwdexp | cut -d'=' -f 1`
+	musicpwdvalue=`echo $musicpwdexp | cut -d'=' -f 2`
+	uci -c/opt/ft set ftconfig.@ftconfig[0].musicpwd=$musicpwdvalue
+	uci -c/opt/ft commit
+
+	musicmonthexp=`echo $QUERY_STRING | cut -d'&' -f 6`
+	musicmonthkey=`echo $musicmonthexp | cut -d'=' -f 1`
+	musicmonthvalue=`echo $musicmonthexp | cut -d'=' -f 2`
+	uci -c/opt/ft set ftconfig.@ftconfig[0].musicmonth=$musicmonthvalue
+	uci -c/opt/ft commit
+
+	#echo "{\"result\":\"$snvalue$master_addrvalue$master_portvalue$master_passwdvalue$musicpwdvalue$musicmonthvalue\",\"message\":\"Please input the right format like ssid=xxxx&passwd=yyyy\"}"
+	echo "{\"result\":\"success\",\"message\":\"Save success!\"}"
+fi

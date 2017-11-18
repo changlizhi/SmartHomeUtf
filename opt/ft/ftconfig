@@ -1,0 +1,13 @@
+
+config ftconfig
+	option account_max '5'
+	option ledscreen_port '28123'
+	option ledscreen_addr '192.168.3.187'
+	option firststart '0'
+	option sn '2'
+	option master_addr '3'
+	option master_port '4'
+	option master_passwd '5'
+	option musicpwd '6'
+	option musicmonth '7'
+

@@ -1,0 +1,132 @@
+<div class='wrapper'>
+    <h3>Set ftconfig:</h3>
+    <ul class='biaodanshuju'>
+      <li class='lilist'>
+        <label for='sn'>sn:</label><i></i>
+        <input type='text'
+               id='sn'
+               placeholder='please input sn:'>
+               </li>
+      <li class='lilist'>
+        <label for='master_addr'>master_addr:</label><i></i>
+        <input type='text'
+               id='master_addr'
+               placeholder='please input master_addr:'>
+               </li>
+      <li class='lilist'>
+        <label for='master_port'>master_port':</label><i></i>
+        <input type='text'
+               id='master_port'
+               placeholder='please input master_port:'>
+               </li>
+      <li class='lilist' >
+        <label for='master_passwd'>master_passwd:</label><i></i>
+        <input type='text'
+               id='master_passwd'
+               placeholder='please input master_passwd:'>
+               </li>
+      <li class='lilist'>
+        <label for='musicpwd'>musicpwd:</label><i></i>
+        <input type='text'
+               id='musicpwd'
+               placeholder='please input musicpwd:'>
+               </li>
+      <li class='lilist'>
+        <label for='musicmonth'>musicmonth:</label><i></i>
+        <input type='text'
+               id='musicmonth'
+               placeholder='please input musicmonth:'>
+               </li>
+    </ul>
+	<button onclick='shezhiftconfig()'>submit</button>
+	<div id='alertMsg'></div>
+  </div>
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+
+<script>
+	function shezhiftconfig(){
+		var co = confirm('This config may disable the monitor!!!Please dont modify this page unless you know what you are doing!')
+		if (co == true){
+		sn = $('#sn').val()
+		master_addr = $('#master_addr').val()
+		master_port = $('#master_port').val()
+		master_passwd = $('#master_passwd').val()
+		musicpwd = $('#musicpwd').val()
+		musicmonth = $('#musicmonth').val()
+		$.ajax({
+			type:'get',
+			url:'/cgi-bin/shezhi?sn='+sn
+			+'&master_addr='+master_addr
+			+'&master_port='+master_port
+			+'&master_passwd='+master_passwd
+			+'&musicpwd='+musicpwd
+			+'&musicmonth='+musicmonth,
+			dataType:'json',
+			contentType:'application/json;charset=utf-8',
+			success:function(json){
+				if (json.result == "success") {
+               				alert(json.message)
+              			}
+			},
+			error:function(json,status){
+				console.log('failure...')
+			}
+		})
+		}
+		
+	}
+</script>
+
+<style>
+  .wrapper {
+    margin-bottom: 80px;
+    padding-top: 70px;
+  }
+  .wrapper h3 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .biaodanshuju {
+    width: 85vw;
+    margin: 0 auto;
+    font-size: 0.9rem;
+  }
+  .biaodanshuju .lilist {
+    display: flex;
+    height: 40px;
+    margin: 5px 0;
+    padding-right: 10px;
+    line-height: 40px;
+    border: 1px solid #CACACA;
+    border-radius: 8px;
+  }
+  .biaodanshuju .lilist label {
+    flex: 0 0 130px;
+    text-align: center;
+    font-weight: bold;
+  }
+  .biaodanshuju .lilist i {
+    display: inline-block;
+    height: 25px;
+    margin: 7px 0;
+    border-right: 2px solid #CCC;
+  }
+  .biaodanshuju .lilist input {
+    flex: 1;
+    width: 90%;
+    height: 35px;
+    margin-top: 1px;
+    text-indent: 1em;
+    border: 0;
+  }
+  button {
+    width: 60vw;
+    height: 40px;
+    font-size: 1.1rem;
+    margin: 20px 20vw;
+    line-height: 40px;
+    border: 1px solid #83CE7E;
+    border-radius: 8px;
+    background-color: #79DC72;
+  }
+</style>
