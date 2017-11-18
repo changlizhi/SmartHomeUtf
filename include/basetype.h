@@ -20,40 +20,40 @@ typedef void (*pfvoid_t)(void);
 #define INT64    long long//__int64
 
 typedef struct __attribute__((packed)){
-	unsigned char year;
-	unsigned char month;
-	unsigned char day;
-	unsigned char hour;
-	unsigned char minute;
-	unsigned char second;
+    unsigned char year;
+    unsigned char month;
+    unsigned char day;
+    unsigned char hour;
+    unsigned char minute;
+    unsigned char second;
 } rtime_t;
 
 typedef struct __attribute__((packed)){
-	unsigned char year;
-	unsigned char month;
-	unsigned char day;
-	unsigned char hour;
-	unsigned char minute;
+    unsigned char year;
+    unsigned char month;
+    unsigned char day;
+    unsigned char hour;
+    unsigned char minute;
 } mntime_t;
 
 typedef union {
-	unsigned short us;
-	unsigned char uc[2];
+    unsigned short us;
+    unsigned char uc[2];
 } VARSHORT;
 
 typedef union {
-	unsigned int ul;
-	unsigned char uc[4];
+    unsigned int ul;
+    unsigned char uc[4];
 } VARLONG;
 
 typedef union {
-	float ft;
-	unsigned char uc[4];
+    float ft;
+    unsigned char uc[4];
 } VARFLOAT;
 
 typedef union {
-	double db;
-	unsigned char uc[8];
+    double db;
+    unsigned char uc[8];
 } VARDOUBLE;
 
 #define VARFLEX_ULONG    0
@@ -64,11 +64,11 @@ typedef union {
 #define VARFLEX_SSHORT    5
 #define VARFLEX_USHORTFLAG 6
 typedef union {
-	unsigned int ul;
-	int si;
-	unsigned char uc[4];
-	unsigned short us;
-	short ss;
+    unsigned int ul;
+    int si;
+    unsigned char uc[4];
+    unsigned short us;
+    short ss;
 } VARFLEX_4;
 
 #endif /*_BASETYPE_H*/

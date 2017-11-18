@@ -12,7 +12,7 @@
 int Sfloat02ToPower(const unsigned char *psrc);
 void PowerToSfloat02(int src, unsigned char *pdst);
 
-#define MAX_GENE_MWH	2000000
+#define MAX_GENE_MWH    2000000
 
 int Sbcd03ToEnergy(const unsigned char *psrc);
 void EnergyToSbcd03(int src, unsigned char *pdst);

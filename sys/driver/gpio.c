@@ -29,20 +29,20 @@
  ****************************************************************/
 int gpio_export(unsigned int gpio)
 {
-	int fd, len;
-	char buf[MAX_BUF];
+    int fd, len;
+    char buf[MAX_BUF];
  
-	fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
-	if (fd < 0) {
-		perror("gpio/export");
-		return fd;
-	}
+    fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
+    if (fd < 0) {
+        perror("gpio/export");
+        return fd;
+    }
  
-	len = snprintf(buf, sizeof(buf), "%d", gpio);
-	write(fd, buf, len);
-	close(fd);
+    len = snprintf(buf, sizeof(buf), "%d", gpio);
+    write(fd, buf, len);
+    close(fd);
  
-	return 0;
+    return 0;
 }
 
 /****************************************************************
@@ -50,19 +50,19 @@ int gpio_export(unsigned int gpio)
  ****************************************************************/
 int gpio_unexport(unsigned int gpio)
 {
-	int fd, len;
-	char buf[MAX_BUF];
+    int fd, len;
+    char buf[MAX_BUF];
  
-	fd = open(SYSFS_GPIO_DIR "/unexport", O_WRONLY);
-	if (fd < 0) {
-		perror("gpio/export");
-		return fd;
-	}
+    fd = open(SYSFS_GPIO_DIR "/unexport", O_WRONLY);
+    if (fd < 0) {
+        perror("gpio/export");
+        return fd;
+    }
  
-	len = snprintf(buf, sizeof(buf), "%d", gpio);
-	write(fd, buf, len);
-	close(fd);
-	return 0;
+    len = snprintf(buf, sizeof(buf), "%d", gpio);
+    write(fd, buf, len);
+    close(fd);
+    return 0;
 }
 
 /****************************************************************
@@ -70,24 +70,24 @@ int gpio_unexport(unsigned int gpio)
  ****************************************************************/
 int gpio_set_dir(unsigned int gpio, unsigned int out_flag)
 {
-	int fd;
-	char buf[MAX_BUF];
+    int fd;
+    char buf[MAX_BUF];
  
-	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR  "/gpio%d/direction", gpio);
+    snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR  "/gpio%d/direction", gpio);
  
-	fd = open(buf, O_WRONLY);
-	if (fd < 0) {
-		perror("gpio/direction");
-		return fd;
-	}
+    fd = open(buf, O_WRONLY);
+    if (fd < 0) {
+        perror("gpio/direction");
+        return fd;
+    }
  
-	if (out_flag)
-		write(fd, "out", 4);
-	else
-		write(fd, "in", 3);
+    if (out_flag)
+        write(fd, "out", 4);
+    else
+        write(fd, "in", 3);
  
-	close(fd);
-	return 0;
+    close(fd);
+    return 0;
 }
 
 /****************************************************************
@@ -95,24 +95,24 @@ int gpio_set_dir(unsigned int gpio, unsigned int out_flag)
  ****************************************************************/
 int gpio_set_value(unsigned int gpio, unsigned int value)
 {
-	int fd;
-	char buf[MAX_BUF];
+    int fd;
+    char buf[MAX_BUF];
  
-	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
+    snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
  
-	fd = open(buf, O_WRONLY);
-	if (fd < 0) {
-		perror("gpio/set-value");
-		return fd;
-	}
+    fd = open(buf, O_WRONLY);
+    if (fd < 0) {
+        perror("gpio/set-value");
+        return fd;
+    }
  
-	if (value)
-		write(fd, "1", 2);
-	else
-		write(fd, "0", 2);
+    if (value)
+        write(fd, "1", 2);
+    else
+        write(fd, "0", 2);
  
-	close(fd);
-	return 0;
+    close(fd);
+    return 0;
 }
 
 /****************************************************************
@@ -120,28 +120,28 @@ int gpio_set_value(unsigned int gpio, unsigned int value)
  ****************************************************************/
 int gpio_get_value(unsigned int gpio, unsigned int *value)
 {
-	int fd;
-	char buf[MAX_BUF];
-	char ch;
+    int fd;
+    char buf[MAX_BUF];
+    char ch;
 
-	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
+    snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
  
-	fd = open(buf, O_RDONLY);
-	if (fd < 0) {
-		perror("gpio/get-value");
-		return fd;
-	}
+    fd = open(buf, O_RDONLY);
+    if (fd < 0) {
+        perror("gpio/get-value");
+        return fd;
+    }
  
-	read(fd, &ch, 1);
+    read(fd, &ch, 1);
 
-	if (ch != '0') {
-		*value = 1;
-	} else {
-		*value = 0;
-	}
+    if (ch != '0') {
+        *value = 1;
+    } else {
+        *value = 0;
+    }
  
-	close(fd);
-	return 0;
+    close(fd);
+    return 0;
 }
 
 
@@ -151,20 +151,20 @@ int gpio_get_value(unsigned int gpio, unsigned int *value)
 
 int gpio_set_edge(unsigned int gpio, char *edge)
 {
-	int fd;
-	char buf[MAX_BUF];
+    int fd;
+    char buf[MAX_BUF];
 
-	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/edge", gpio);
+    snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/edge", gpio);
  
-	fd = open(buf, O_WRONLY);
-	if (fd < 0) {
-		perror("gpio/set-edge");
-		return fd;
-	}
+    fd = open(buf, O_WRONLY);
+    if (fd < 0) {
+        perror("gpio/set-edge");
+        return fd;
+    }
  
-	write(fd, edge, strlen(edge) + 1); 
-	close(fd);
-	return 0;
+    write(fd, edge, strlen(edge) + 1);
+    close(fd);
+    return 0;
 }
 
 /****************************************************************
@@ -173,16 +173,16 @@ int gpio_set_edge(unsigned int gpio, char *edge)
 
 int gpio_fd_open(unsigned int gpio)
 {
-	int fd;
-	char buf[MAX_BUF];
+    int fd;
+    char buf[MAX_BUF];
 
-	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
+    snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
  
-	fd = open(buf, O_RDONLY | O_NONBLOCK );
-	if (fd < 0) {
-		perror("gpio/fd_open");
-	}
-	return fd;
+    fd = open(buf, O_RDONLY | O_NONBLOCK );
+    if (fd < 0) {
+        perror("gpio/fd_open");
+    }
+    return fd;
 }
 
 /****************************************************************
@@ -191,7 +191,7 @@ int gpio_fd_open(unsigned int gpio)
 
 int gpio_fd_close(int fd)
 {
-	return close(fd);
+    return close(fd);
 }
 
 /**
@@ -201,30 +201,30 @@ int gpio_fd_close(int fd)
 */
 int ExtClockRead(extclock_t *clock)
 {
-/*	AssertLog(-1==FidGpio, "invalid fid(%d)\n", FidGpio);
+/*    AssertLog(-1==FidGpio, "invalid fid(%d)\n", FidGpio);
 
-	if(sizeof(extclock_t) != read(FidGpio, (char *)clock, sizeof(extclock_t))) {
-		ErrorLog("read ext clock fail\n");
-		return 1;
-	}
-	else return 0;*/
-/*	sysclock_t   sclock;
-	if(SysClockRead(&sclock))
-	{
-		__android_log_print(ANDROID_LOG_INFO,"libsmarthome","read ext clock fail\n");
-		return 1;
-	}
-	else 
-	{
-		clock->year = sclock.year;
-		clock->month = sclock.month;
-		clock->day = sclock.day;
-		clock->hour = sclock.hour;
-		clock->minute = sclock.minute;
-		clock->second = sclock.second;
-		clock->week = sclock.week;
-	}*/
-	return 0;	
+    if(sizeof(extclock_t) != read(FidGpio, (char *)clock, sizeof(extclock_t))) {
+        ErrorLog("read ext clock fail\n");
+        return 1;
+    }
+    else return 0;*/
+/*    sysclock_t   sclock;
+    if(SysClockRead(&sclock))
+    {
+        __android_log_print(ANDROID_LOG_INFO,"libsmarthome","read ext clock fail\n");
+        return 1;
+    }
+    else
+    {
+        clock->year = sclock.year;
+        clock->month = sclock.month;
+        clock->day = sclock.day;
+        clock->hour = sclock.hour;
+        clock->minute = sclock.minute;
+        clock->second = sclock.second;
+        clock->week = sclock.week;
+    }*/
+    return 0;
 }
 
 /**
@@ -234,16 +234,16 @@ int ExtClockRead(extclock_t *clock)
 */
 int ExtClockWrite(const extclock_t *clock)
 {
-/*	AssertLog(-1==FidGpio, "invalid fid(%d)\n", FidGpio);
+/*    AssertLog(-1==FidGpio, "invalid fid(%d)\n", FidGpio);
 
-	if(sizeof(extclock_t) != write(FidGpio, (const char *)clock, sizeof(extclock_t))) {
-		ErrorLog("set ext clock fail\n");
-		return 1;
-	}
-	else 
-	*/
-	system("hwclock --systohc");
-	return 0;
+    if(sizeof(extclock_t) != write(FidGpio, (const char *)clock, sizeof(extclock_t))) {
+        ErrorLog("set ext clock fail\n");
+        return 1;
+    }
+    else
+    */
+    system("hwclock --systohc");
+    return 0;
 }
 
 /**
@@ -256,9 +256,9 @@ int ExtClockWrite(const extclock_t *clock)
 int ReadDriverVersion(unsigned char *buf, int len)
 {
 
-	memset(buf,0,6);
+    memset(buf,0,6);
 
-	return 6;
+    return 6;
 }
 /**
 * @brief 初始化GpioInit端口
@@ -270,23 +270,23 @@ DECLARE_INIT_FUNC(GpioInit);
 int GpioInit(void)
 {
 
-	gpio_export(GPIO_42);
-	gpio_set_dir(GPIO_42, 1);
-	gpio_set_value(GPIO_42,1);
+    gpio_export(GPIO_42);
+    gpio_set_dir(GPIO_42, 1);
+    gpio_set_value(GPIO_42,1);
 
-	gpio_export(GPIO_39);
-	gpio_set_dir(GPIO_39, 1);
-	gpio_set_value(GPIO_39,0);
+    gpio_export(GPIO_39);
+    gpio_set_dir(GPIO_39, 1);
+    gpio_set_value(GPIO_39,0);
 
-	gpio_export(GPIO_LED_NET);
-	gpio_set_dir(GPIO_LED_NET, 1);
-	gpio_set_value(GPIO_LED_NET,0);
+    gpio_export(GPIO_LED_NET);
+    gpio_set_dir(GPIO_LED_NET, 1);
+    gpio_set_value(GPIO_LED_NET,0);
 
-	gpio_export(GPIO_LED_SYS);
-	gpio_set_dir(GPIO_LED_SYS, 1);
-	gpio_set_value(GPIO_LED_SYS,1);
-	SET_INIT_FLAG(GpioInit);
+    gpio_export(GPIO_LED_SYS);
+    gpio_set_dir(GPIO_LED_SYS, 1);
+    gpio_set_value(GPIO_LED_SYS,1);
+    SET_INIT_FLAG(GpioInit);
 
-	return 0;
+    return 0;
 }
 

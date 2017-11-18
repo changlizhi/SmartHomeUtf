@@ -21,9 +21,9 @@
 
 ///事件控制变量结构
 typedef struct {
-	pthread_mutex_t mutex;
-	pthread_cond_t cond;
-	unsigned long event;
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
+    unsigned long event;
 } sys_event_t;
 
 /**

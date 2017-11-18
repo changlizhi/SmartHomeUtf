@@ -15,14 +15,14 @@
 
 ///系统时间结构
 typedef struct {
-	unsigned char year;    // year - 2000
-	unsigned char month;    // 1~12
-	unsigned char day;     // 1~31
-	unsigned char hour;  // 0~23
-	unsigned char minute;  // 0~59
-	unsigned char second;  // 0~59
-	unsigned char week;  //from sunday, 0~6
-	unsigned char unuse;
+    unsigned char year;    // year - 2000
+    unsigned char month;    // 1~12
+    unsigned char day;     // 1~31
+    unsigned char hour;  // 0~23
+    unsigned char minute;  // 0~59
+    unsigned char second;  // 0~59
+    unsigned char week;  //from sunday, 0~6
+    unsigned char unuse;
 } sysclock_t;
 
 /**
@@ -67,10 +67,10 @@ void UTimeToSysClock(utime_t utime, sysclock_t *ptime);
 int SysClockDifference(const sysclock_t *ptime1, const sysclock_t *ptime2);
 
 ///时间间隔格式
-#define UTIMEDEV_MINUTE	0  //分
-#define UTIMEDEV_HOUR		1  //小时
-#define UTIMEDEV_DAY		2  //天
-#define UTIMEDEV_MONTH	3  //月
+#define UTIMEDEV_MINUTE    0  //分
+#define UTIMEDEV_HOUR        1  //小时
+#define UTIMEDEV_DAY        2  //天
+#define UTIMEDEV_MONTH    3  //月
 /**
 * @brief 在原有时间上增加一段时间
 * @param time 原始时间变量

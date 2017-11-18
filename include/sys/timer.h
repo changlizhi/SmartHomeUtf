@@ -50,12 +50,12 @@ void SysClearCTimer(int id);
 
 //时钟定时器配置数据结构
 typedef struct {
-	utime_t curtime;  //当前时间
-	unsigned char bonce;  //是否只执行一次
-	unsigned char tdev;  //执行时间间隔数值
-	unsigned char tmod;  //执行事件间格单位(参见utime_add)
-	sysclock_t basetime;  //执行基准时间
-	                                 //如时间间隔为1小时,基准时间的分为5,则每天的0:05, 1:05, 2:05, ...执行
+    utime_t curtime;  //当前时间
+    unsigned char bonce;  //是否只执行一次
+    unsigned char tdev;  //执行时间间隔数值
+    unsigned char tmod;  //执行事件间格单位(参见utime_add)
+    sysclock_t basetime;  //执行基准时间
+                                     //如时间间隔为1小时,基准时间的分为5,则每天的0:05, 1:05, 2:05, ...执行
 } rtimer_conf_t;
 
 /**

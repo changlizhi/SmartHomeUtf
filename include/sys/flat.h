@@ -10,19 +10,19 @@
 #define _SYS_FLAT_H
 
 //copy from driver.注意，若driver中结构改动，则此处需更新
-#define FLATID_START		0
-#define FLATID_IMETENE	FLATID_START	
-#define FLATID_PULSE		1
-#define FLATID_RUNSTATE	2
-#define FLATID_END		3
-#define MAX_SECTOR		FLATID_END
+#define FLATID_START        0
+#define FLATID_IMETENE    FLATID_START
+#define FLATID_PULSE        1
+#define FLATID_RUNSTATE    2
+#define FLATID_END        3
+#define MAX_SECTOR        FLATID_END
 
-#define BUFFER_SIZE		1024
+#define BUFFER_SIZE        1024
 
 typedef struct {
-	unsigned int id;
-	unsigned short add_start;
-	unsigned short add_max;
+    unsigned int id;
+    unsigned short add_start;
+    unsigned short add_max;
 } sector_conf_t;
 
 

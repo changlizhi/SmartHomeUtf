@@ -17,18 +17,18 @@
 
 static void ReadLine(char *buf, int maxlen)
 {
-	while(1) {
-		if(fgets(buf, maxlen-1, stdin) != NULL) {
-		//if(gets(buf) != NULL) {
-			buf[maxlen-1] = 0;
-			return;
-		}
+    while(1) {
+        if(fgets(buf, maxlen-1, stdin) != NULL) {
+        //if(gets(buf) != NULL) {
+            buf[maxlen-1] = 0;
+            return;
+        }
 
-		Sleep(10);
-	}
+        Sleep(10);
+    }
 }
 
-#define SHELLARG_NUM	12
+#define SHELLARG_NUM    12
 static char CmdLineArgBuf[SHELLARG_NUM][128];
 static char *CmdLineArgV[SHELLARG_NUM];
 
@@ -37,42 +37,42 @@ static char *CmdLineArgV[SHELLARG_NUM];
 */
 static void *TtyShellTask(void *arg)
 {
-	static char command[256];
+    static char command[256];
 
-	shell_func pfunc;
-	int argc;
+    shell_func pfunc;
+    int argc;
 
-	PrintLog(0,"tty shell start\n");
+    PrintLog(0,"tty shell start\n");
 
-	while(1) {
-		PrintLog(0,"$:");
-		ReadLine(command, 256);
+    while(1) {
+        PrintLog(0,"$:");
+        ReadLine(command, 256);
 
-		argc = ShellParseArg(command, CmdLineArgV, SHELLARG_NUM);
-		if(argc > 0) {
-			pfunc = FindShellFunc(CmdLineArgV[0]);
-			if(NULL != pfunc) {
-				SetLogInterface(0);
-				(*pfunc)(argc, CmdLineArgV);
-			}
-		}
-		if(exitflag)
-			break;
-	}
+        argc = ShellParseArg(command, CmdLineArgV, SHELLARG_NUM);
+        if(argc > 0) {
+            pfunc = FindShellFunc(CmdLineArgV[0]);
+            if(NULL != pfunc) {
+                SetLogInterface(0);
+                (*pfunc)(argc, CmdLineArgV);
+            }
+        }
+        if(exitflag)
+            break;
+    }
 
-	return 0;
+    return 0;
 }
 
 int TtyShellStart(void)
 {
-	int argc;
+    int argc;
 
-	for(argc=0; argc<SHELLARG_NUM; argc++) {
-		CmdLineArgV[argc] = CmdLineArgBuf[argc];
-	}
+    for(argc=0; argc<SHELLARG_NUM; argc++) {
+        CmdLineArgV[argc] = CmdLineArgBuf[argc];
+    }
 
-	SysCreateTask(TtyShellTask, NULL);
+    SysCreateTask(TtyShellTask, NULL);
 
-	return 0;
+    return 0;
 }
 

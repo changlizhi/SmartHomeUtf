@@ -9,7 +9,7 @@
 #ifndef _RFMET_H
 #define _RFMET_H
 
-#define RS485BUS_BUF_LEN		272
+#define RS485BUS_BUF_LEN        272
 int RFMetRead(const plc_dest_t *dest, unsigned long itemid, unsigned char *buf, int len);
 int RFMetCtrl(const plc_dest_t *dest, unsigned long itemid,unsigned char *buf,int len);
 #endif/*_RS485MET_H*/

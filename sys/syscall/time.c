@@ -24,8 +24,8 @@ static utime_t UTimeCurrent;
 
 ///系统时间结构(读取读写,防止中断)
 typedef union {
-	unsigned long u[2];
-	sysclock_t c;
+    unsigned long u[2];
+    sysclock_t c;
 } sysclock_rwctl_t;
 
 static sysclock_rwctl_t ClockCurrent;
@@ -41,36 +41,36 @@ static sysclock_t ClockSysStart;
 */
 int SysClockRead(sysclock_t *pclock)
 {
-	time_t timep;
-	struct tm timec;
-	sysclock_rwctl_t rwclock;
-	
-	time(&timep);
-	timec = *localtime(&timep);
-	if(timec.tm_year !=117)
-	{
-		//system("hwclock -s");
-		
-		time(&timep);
-		timec = *localtime(&timep);
-	}
-	
-	pclock->year = rwclock.c.year = timec.tm_year - 100;
-	pclock->month = rwclock.c.month = timec.tm_mon + 1;
-	pclock->day = rwclock.c.day = timec.tm_mday;
-	pclock->hour = rwclock.c.hour = timec.tm_hour;
-	pclock->minute = rwclock.c.minute = timec.tm_min;
-	pclock->second = rwclock.c.second = timec.tm_sec;
-	pclock->week = rwclock.c.week = timec.tm_wday;
+    time_t timep;
+    struct tm timec;
+    sysclock_rwctl_t rwclock;
 
-	ClockCurrent.u[0] = rwclock.u[0];
-	ClockCurrent.u[1] = rwclock.u[1];
+    time(&timep);
+    timec = *localtime(&timep);
+    if(timec.tm_year !=117)
+    {
+        //system("hwclock -s");
 
-	UTimeCurrent = SysClockToUTime(&(ClockCurrent.c));
+        time(&timep);
+        timec = *localtime(&timep);
+    }
 
-	//SysUnLockRwLock(&ClockRwLock);
+    pclock->year = rwclock.c.year = timec.tm_year - 100;
+    pclock->month = rwclock.c.month = timec.tm_mon + 1;
+    pclock->day = rwclock.c.day = timec.tm_mday;
+    pclock->hour = rwclock.c.hour = timec.tm_hour;
+    pclock->minute = rwclock.c.minute = timec.tm_min;
+    pclock->second = rwclock.c.second = timec.tm_sec;
+    pclock->week = rwclock.c.week = timec.tm_wday;
 
-	return 0;
+    ClockCurrent.u[0] = rwclock.u[0];
+    ClockCurrent.u[1] = rwclock.u[1];
+
+    UTimeCurrent = SysClockToUTime(&(ClockCurrent.c));
+
+    //SysUnLockRwLock(&ClockRwLock);
+
+    return 0;
 }
 
 /**
@@ -80,39 +80,39 @@ int SysClockRead(sysclock_t *pclock)
 */
 int SysClockSet(const sysclock_t *pclock)
 {
-	time_t timep;
-	struct tm timec;
-	struct timeval tval;
-	struct timezone tzone;
-	sysclock_rwctl_t rwclock;
+    time_t timep;
+    struct tm timec;
+    struct timeval tval;
+    struct timezone tzone;
+    sysclock_rwctl_t rwclock;
 
-	gettimeofday(&tval, &tzone);
+    gettimeofday(&tval, &tzone);
 
-	timec.tm_year = (int)pclock->year + 100;
-	timec.tm_mon = pclock->month - 1;
-	timec.tm_mday = pclock->day;
-	timec.tm_hour = pclock->hour;
-	timec.tm_min = pclock->minute;
-	timec.tm_sec = pclock->second;
-	timep = mktime(&timec);
-	tval.tv_sec = timep;
-	tval.tv_usec = 0;
-	settimeofday(&tval, &tzone);
+    timec.tm_year = (int)pclock->year + 100;
+    timec.tm_mon = pclock->month - 1;
+    timec.tm_mday = pclock->day;
+    timec.tm_hour = pclock->hour;
+    timec.tm_min = pclock->minute;
+    timec.tm_sec = pclock->second;
+    timep = mktime(&timec);
+    tval.tv_sec = timep;
+    tval.tv_usec = 0;
+    settimeofday(&tval, &tzone);
 
-	//SysWriteLockRwLock(&ClockRwLock);
+    //SysWriteLockRwLock(&ClockRwLock);
 
-	UTimeCurrent = SysClockToUTime(pclock);
-	UTimeToSysClock(UTimeCurrent, &(rwclock.c));
-	ClockCurrent.u[0] = rwclock.u[0];
-	ClockCurrent.u[1] = rwclock.u[1];
+    UTimeCurrent = SysClockToUTime(pclock);
+    UTimeToSysClock(UTimeCurrent, &(rwclock.c));
+    ClockCurrent.u[0] = rwclock.u[0];
+    ClockCurrent.u[1] = rwclock.u[1];
 
-	//SysUnLockRwLock(&ClockRwLock);
+    //SysUnLockRwLock(&ClockRwLock);
 
-	return 0;
+    return 0;
 }
 
 static const int DaysBeforeMonth[12] = {
-	0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
+    0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
 };
 
 /*
@@ -122,51 +122,51 @@ static const int DaysBeforeMonth[12] = {
 */
 utime_t SysClockToUTime(const sysclock_t *ptime)
 {
-	int year, day;
-	int cal;
-	//unsigned char i, j;
-	
-	year = (int)(ptime->year)&0xff;
-	if(year != 0) day = ((year-1)>>2) + 1;
-	else day = 0;
-	cal = year *365 + day; //days
-	day = cal;
+    int year, day;
+    int cal;
+    //unsigned char i, j;
 
-	if(ptime->month > 2 && 0 == (ptime->year&0x03)) day += 1;
+    year = (int)(ptime->year)&0xff;
+    if(year != 0) day = ((year-1)>>2) + 1;
+    else day = 0;
+    cal = year *365 + day; //days
+    day = cal;
 
-	/*j = ptime->month;
-	for(i=1; i<j; i++) {
-		if(2 == i) {
-			if(0 == (ptime->year & 0x03)) day += 29;
-			else day += 28;
-		}
-		else if(i < 8) {
-			if(i&0x01) day += 31;
-			else day += 30;
-		}
-		else {
-			if(i&0x01) day += 30;
-			else day += 31;
-		}
-	}*/
-	if(ptime->month != 0 && ptime->month < 13) {
-		day += DaysBeforeMonth[ptime->month - 1];
-	}
+    if(ptime->month > 2 && 0 == (ptime->year&0x03)) day += 1;
 
-	if(0 != ptime->day) day += ptime->day - 1;
+    /*j = ptime->month;
+    for(i=1; i<j; i++) {
+        if(2 == i) {
+            if(0 == (ptime->year & 0x03)) day += 29;
+            else day += 28;
+        }
+        else if(i < 8) {
+            if(i&0x01) day += 31;
+            else day += 30;
+        }
+        else {
+            if(i&0x01) day += 30;
+            else day += 31;
+        }
+    }*/
+    if(ptime->month != 0 && ptime->month < 13) {
+        day += DaysBeforeMonth[ptime->month - 1];
+    }
 
-	cal = day*1440;
+    if(0 != ptime->day) day += ptime->day - 1;
 
-	day = ptime->hour;
-	day *= 60;
-	cal += day;
+    cal = day*1440;
 
-	cal += ptime->minute;
-	cal *= 60;
+    day = ptime->hour;
+    day *= 60;
+    cal += day;
 
-	cal += ptime->second;
+    cal += ptime->minute;
+    cal *= 60;
 
-	return (utime_t)cal;
+    cal += ptime->second;
+
+    return (utime_t)cal;
 }
 
 /**
@@ -176,55 +176,55 @@ utime_t SysClockToUTime(const sysclock_t *ptime)
 */
 void UTimeToSysClock(utime_t utime, sysclock_t *ptime)
 {
-	unsigned char uc;
-	int max;
+    unsigned char uc;
+    int max;
 
-	ptime->second = utime%60;
-	utime /= 60;
+    ptime->second = utime%60;
+    utime /= 60;
 
-	ptime->minute = utime%60;
-	utime /= 60;
+    ptime->minute = utime%60;
+    utime /= 60;
 
-	ptime->hour = utime%24;
-	utime /= 24;
+    ptime->hour = utime%24;
+    utime /= 24;
 
-	ptime->week = (unsigned char)((utime+6)%7);  // 2000.1.1 is saturday
+    ptime->week = (unsigned char)((utime+6)%7);  // 2000.1.1 is saturday
 
-	max = utime/1461;  //four years
-	ptime->year = (unsigned char)(max<<2);
-	//utime %= 1461;
-	utime -= max*1461;
-	uc = 0;
-	max = 366;
-	while(utime >= max) {
-		utime -= max;
-		max = 365;
-		uc += 1;
-	}
-	ptime->year += uc;
+    max = utime/1461;  //four years
+    ptime->year = (unsigned char)(max<<2);
+    //utime %= 1461;
+    utime -= max*1461;
+    uc = 0;
+    max = 366;
+    while(utime >= max) {
+        utime -= max;
+        max = 365;
+        uc += 1;
+    }
+    ptime->year += uc;
 
-	uc=1;
-	max = 31;
-	while(utime >= max) {
-		uc++;
-		utime -= max;
+    uc=1;
+    max = 31;
+    while(utime >= max) {
+        uc++;
+        utime -= max;
 
-		if(2 == uc) {
-			if(0 == (ptime->year&0x03)) max = 29;
-			else max = 28;
-		}
-		else if(uc < 8) {
-			if(uc&0x01) max = 31;
-			else max = 30;
-		}
-		else {
-			if(uc&0x01) max = 30;
-			else max = 31;
-		}
-	}
-	ptime->month = uc;
+        if(2 == uc) {
+            if(0 == (ptime->year&0x03)) max = 29;
+            else max = 28;
+        }
+        else if(uc < 8) {
+            if(uc&0x01) max = 31;
+            else max = 30;
+        }
+        else {
+            if(uc&0x01) max = 30;
+            else max = 31;
+        }
+    }
+    ptime->month = uc;
 
-	ptime->day = utime + 1;
+    ptime->day = utime + 1;
 }
 
 /**
@@ -239,15 +239,15 @@ void UTimeToSysClock(utime_t utime, sysclock_t *ptime)
 */
 int SysClockDifference(const sysclock_t *ptime1, const sysclock_t *ptime2)
 {
-	utime_t cal1, cal2;
-	int diff;
+    utime_t cal1, cal2;
+    int diff;
 
-	cal1 = SysClockToUTime(ptime1);
-	cal2 = SysClockToUTime(ptime2);
+    cal1 = SysClockToUTime(ptime1);
+    cal2 = SysClockToUTime(ptime2);
 
-	diff = (int)cal1 - (int)cal2;
+    diff = (int)cal1 - (int)cal2;
 
-	return diff;
+    return diff;
 }
 
 /**
@@ -263,47 +263,47 @@ int SysClockDifference(const sysclock_t *ptime1, const sysclock_t *ptime2)
 */
 utime_t UTimeAdd(utime_t time, int mod, int dev)
 {
-	utime_t rtn = time;
-	int addup;
+    utime_t rtn = time;
+    int addup;
 
-	if(mod < UTIMEDEV_MONTH) {
-		if(UTIMEDEV_MINUTE== mod) addup = 60;  //minute
-		else if(UTIMEDEV_HOUR == mod) addup = 3600;   //hour
-		else addup = 86400;   //day
+    if(mod < UTIMEDEV_MONTH) {
+        if(UTIMEDEV_MINUTE== mod) addup = 60;  //minute
+        else if(UTIMEDEV_HOUR == mod) addup = 3600;   //hour
+        else addup = 86400;   //day
 
-		addup *= dev;
-	}
-	else { //month
-		sysclock_t clk;
-		int i;
+        addup *= dev;
+    }
+    else { //month
+        sysclock_t clk;
+        int i;
 
-		addup = 0;
-		UTimeToSysClock(time, &clk);
+        addup = 0;
+        UTimeToSysClock(time, &clk);
 
-		for(i=0; i<dev;i++) {
-			if(2 == clk.month) {
-				if(0 == (clk.year&0x03)) addup += 29*1440*60;
-				else addup += 28*1440*60;
-			}
-			else if(clk.month < 8) {
-				if(clk.month&0x01) addup += 31*1440*60;
-				else addup += 30*1440*60;
-			}
-			else {
-				if(clk.month&0x01) addup += 30*1440*60;
-				else addup += 31*1440*60;
-			}
+        for(i=0; i<dev;i++) {
+            if(2 == clk.month) {
+                if(0 == (clk.year&0x03)) addup += 29*1440*60;
+                else addup += 28*1440*60;
+            }
+            else if(clk.month < 8) {
+                if(clk.month&0x01) addup += 31*1440*60;
+                else addup += 30*1440*60;
+            }
+            else {
+                if(clk.month&0x01) addup += 30*1440*60;
+                else addup += 31*1440*60;
+            }
 
-			clk.month++;
-			if(clk.month > 12) {
-				clk.month = 1;
-				clk.year++;
-			}
-		}
-	}
+            clk.month++;
+            if(clk.month > 12) {
+                clk.month = 1;
+                clk.year++;
+            }
+        }
+    }
 
-	rtn += addup;
-	return(rtn);
+    rtn += addup;
+    return(rtn);
 }
 
 /**
@@ -313,26 +313,26 @@ utime_t UTimeAdd(utime_t time, int mod, int dev)
 */
 void SysClockReadCurrent(sysclock_t *pclock)
 {
-	sysclock_rwctl_t rwclock, rwclock2;
+    sysclock_rwctl_t rwclock, rwclock2;
 
-	//SysReadLockRwLock(&ClockRwLock);
+    //SysReadLockRwLock(&ClockRwLock);
 
-	do {
-		rwclock2.u[0] = ClockCurrent.u[0];
-		rwclock2.u[1] = ClockCurrent.u[1];
-		rwclock.u[0] = ClockCurrent.u[0];
-		rwclock.u[1] = ClockCurrent.u[1];
-	} while(rwclock2.u[0] != rwclock.u[0] || rwclock2.c.minute != rwclock.c.minute);
+    do {
+        rwclock2.u[0] = ClockCurrent.u[0];
+        rwclock2.u[1] = ClockCurrent.u[1];
+        rwclock.u[0] = ClockCurrent.u[0];
+        rwclock.u[1] = ClockCurrent.u[1];
+    } while(rwclock2.u[0] != rwclock.u[0] || rwclock2.c.minute != rwclock.c.minute);
 
-	pclock->year = rwclock.c.year;
-	pclock->month = rwclock.c.month;
-	pclock->day = rwclock.c.day;
-	pclock->hour = rwclock.c.hour;
-	pclock->minute = rwclock.c.minute;
-	pclock->second = rwclock.c.second;
-	pclock->week = rwclock.c.week;
+    pclock->year = rwclock.c.year;
+    pclock->month = rwclock.c.month;
+    pclock->day = rwclock.c.day;
+    pclock->hour = rwclock.c.hour;
+    pclock->minute = rwclock.c.minute;
+    pclock->second = rwclock.c.second;
+    pclock->week = rwclock.c.week;
 
-	//SysUnLockRwLock(&ClockRwLock);
+    //SysUnLockRwLock(&ClockRwLock);
 }
 
 /**
@@ -342,7 +342,7 @@ void SysClockReadCurrent(sysclock_t *pclock)
 */
 utime_t UTimeReadCurrent(void)
 {
-	return UTimeCurrent;
+    return UTimeCurrent;
 }
 
 static char TimeFormatBuffer[32];
@@ -355,14 +355,14 @@ static struct timeval TimeValStart;
 */
 const char *UTimeFormat(utime_t time)
 {
-	sysclock_t clock;
+    sysclock_t clock;
 
-	UTimeToSysClock(time, &clock);
+    UTimeToSysClock(time, &clock);
 
-	sprintf(TimeFormatBuffer, "20%02d-%d-%d %d:%d:%d", clock.year, clock.month, clock.day,
-			clock.hour, clock.minute, clock.second);
+    sprintf(TimeFormatBuffer, "20%02d-%d-%d %d:%d:%d", clock.year, clock.month, clock.day,
+            clock.hour, clock.minute, clock.second);
 
-	return TimeFormatBuffer;
+    return TimeFormatBuffer;
 }
 
 /**
@@ -372,10 +372,10 @@ const char *UTimeFormat(utime_t time)
 */
 const char *SysClockFormat(const sysclock_t *pclock)
 {
-	sprintf(TimeFormatBuffer, "20%02d-%d-%d %d:%d:%d", pclock->year, pclock->month, pclock->day,
-			pclock->hour, pclock->minute, pclock->second);
+    sprintf(TimeFormatBuffer, "20%02d-%d-%d %d:%d:%d", pclock->year, pclock->month, pclock->day,
+            pclock->hour, pclock->minute, pclock->second);
 
-	return TimeFormatBuffer;
+    return TimeFormatBuffer;
 }
 
 /**
@@ -383,7 +383,7 @@ const char *SysClockFormat(const sysclock_t *pclock)
 */
 void StartTimeMeasure(void)
 {
-	gettimeofday(&TimeValStart, (struct timezone *)0);
+    gettimeofday(&TimeValStart, (struct timezone *)0);
 }
 
 /**
@@ -392,22 +392,22 @@ void StartTimeMeasure(void)
 */
 int StopTimeMeasure(void)
 {
-	struct timeval tval;
-	int rtn;
+    struct timeval tval;
+    int rtn;
 
-	gettimeofday(&tval, (struct timezone *)0);
+    gettimeofday(&tval, (struct timezone *)0);
 
-	if(tval.tv_usec < TimeValStart.tv_usec) {
-		tval.tv_sec--;
-		tval.tv_usec += 1000000;
-	}
-	if(tval.tv_sec < TimeValStart.tv_sec) return 0;
+    if(tval.tv_usec < TimeValStart.tv_usec) {
+        tval.tv_sec--;
+        tval.tv_usec += 1000000;
+    }
+    if(tval.tv_sec < TimeValStart.tv_sec) return 0;
 
-	rtn = tval.tv_sec - TimeValStart.tv_sec;
-	rtn *= 1000;
-	rtn += (tval.tv_usec - TimeValStart.tv_usec)/1000;
+    rtn = tval.tv_sec - TimeValStart.tv_sec;
+    rtn *= 1000;
+    rtn += (tval.tv_usec - TimeValStart.tv_usec)/1000;
 
-	return rtn;
+    return rtn;
 }
 
 /**
@@ -416,12 +416,12 @@ int StopTimeMeasure(void)
 */
 const char *StopTimeMeasureFormat(void)
 {
-	int msec;
+    int msec;
 
-	msec = StopTimeMeasure();
-	sprintf(TimeFormatBuffer, "%d.%03ds", msec/1000, msec%1000);
+    msec = StopTimeMeasure();
+    sprintf(TimeFormatBuffer, "%d.%03ds", msec/1000, msec%1000);
 
-	return TimeFormatBuffer;
+    return TimeFormatBuffer;
 }
 
 /**
@@ -430,13 +430,13 @@ const char *StopTimeMeasureFormat(void)
 */
 void GetClockSysStart(sysclock_t *clock)
 {
-	clock->year = ClockSysStart.year;
-	clock->month = ClockSysStart.month;
-	clock->day = ClockSysStart.day;
-	clock->hour = ClockSysStart.hour;
-	clock->minute = ClockSysStart.minute;
-	clock->second = ClockSysStart.second;
-	clock->week = ClockSysStart.week;
+    clock->year = ClockSysStart.year;
+    clock->month = ClockSysStart.month;
+    clock->day = ClockSysStart.day;
+    clock->hour = ClockSysStart.hour;
+    clock->minute = ClockSysStart.minute;
+    clock->second = ClockSysStart.second;
+    clock->week = ClockSysStart.week;
 }
 
 /**
@@ -446,197 +446,197 @@ void GetClockSysStart(sysclock_t *clock)
 */
 int ReadExternSysClock(sysclock_t *clock)
 {
-#define FAILCNT_MAX		300
-#define RETRY_MAX		3
+#define FAILCNT_MAX        300
+#define RETRY_MAX        3
 
-	int retry, failcnt;
-	extclock_t extclock1, extclock2;
+    int retry, failcnt;
+    extclock_t extclock1, extclock2;
 
-	//SysInitRwLock(&ClockRwLock);
+    //SysInitRwLock(&ClockRwLock);
 
-	for(failcnt=0; failcnt<FAILCNT_MAX; failcnt++) {
-		for(retry=0; retry<RETRY_MAX; retry++) {
-			if(ExtClockRead(&extclock1)) continue;
-			if(ExtClockRead(&extclock2)) continue;
-			break;
-		}
-		if(retry >= RETRY_MAX) {
-			PrintLog(0,"read ext clock fail\n");
-			return 1;
-		}
+    for(failcnt=0; failcnt<FAILCNT_MAX; failcnt++) {
+        for(retry=0; retry<RETRY_MAX; retry++) {
+            if(ExtClockRead(&extclock1)) continue;
+            if(ExtClockRead(&extclock2)) continue;
+            break;
+        }
+        if(retry >= RETRY_MAX) {
+            PrintLog(0,"read ext clock fail\n");
+            return 1;
+        }
 
-		if(extclock1.year != extclock2.year) continue;
-		if(extclock1.month != extclock2.month) continue;
-		if(extclock1.day != extclock2.day) continue;
-		if(extclock1.hour != extclock2.hour) continue;
-		if(extclock1.minute != extclock2.minute) continue;
+        if(extclock1.year != extclock2.year) continue;
+        if(extclock1.month != extclock2.month) continue;
+        if(extclock1.day != extclock2.day) continue;
+        if(extclock1.hour != extclock2.hour) continue;
+        if(extclock1.minute != extclock2.minute) continue;
 
-		break;
-	}
-	if(failcnt >= FAILCNT_MAX) {
-		PrintLog(0,"ext clock time invalid\n");
-		return 1;
-	}
+        break;
+    }
+    if(failcnt >= FAILCNT_MAX) {
+        PrintLog(0,"ext clock time invalid\n");
+        return 1;
+    }
 
-	clock->year = extclock2.year;
-	clock->month = extclock2.month;
-	clock->day = extclock2.day;
-	clock->hour = extclock2.hour;
-	clock->minute = extclock2.minute;
-	clock->second = extclock2.second;
-	clock->week = extclock2.week;
+    clock->year = extclock2.year;
+    clock->month = extclock2.month;
+    clock->day = extclock2.day;
+    clock->hour = extclock2.hour;
+    clock->minute = extclock2.minute;
+    clock->second = extclock2.second;
+    clock->week = extclock2.week;
 
-	return 0;
+    return 0;
 }
 int getFileDays()
 {
-	struct	stat 	buf;
-	int 	reseult;
-	sysclock_t filepclock;
-	sysclock_t currentclock;
-	struct tm timec;
-	time_t   ctime;
-	int     second = 0;
-	int     MaxDays = 0;
-	if(access("/tmp/mounts/SD-P1/music.zip",F_OK)!=0)
-		return -1;
-	
-	reseult = stat("/tmp/mounts/SD-P1/music.zip",&buf);
-	ctime = buf.st_ctime;
-	SysClockRead(&currentclock);
+    struct    stat     buf;
+    int     reseult;
+    sysclock_t filepclock;
+    sysclock_t currentclock;
+    struct tm timec;
+    time_t   ctime;
+    int     second = 0;
+    int     MaxDays = 0;
+    if(access("/tmp/mounts/SD-P1/music.zip",F_OK)!=0)
+        return -1;
 
-	timec = *localtime(&ctime);
-	
-	filepclock.year = timec.tm_year - 100;
-	filepclock.month = timec.tm_mon + 1;
-	filepclock.day = timec.tm_mday;
-	filepclock.hour = timec.tm_hour;
-	filepclock.minute = timec.tm_min;
-	filepclock.second = timec.tm_sec;
-	filepclock.week = timec.tm_wday;
+    reseult = stat("/tmp/mounts/SD-P1/music.zip",&buf);
+    ctime = buf.st_ctime;
+    SysClockRead(&currentclock);
 
-	second = SysClockDifference(&currentclock,&filepclock);
-	MaxDays = ParaTermG.Musicmonth*2592000;
-	PrintLog(0,"getFileDays second: %d\n",second);
-	if(second>MaxDays)
-		return 1;
-	else
-		return 0;
-	
-	
+    timec = *localtime(&ctime);
+
+    filepclock.year = timec.tm_year - 100;
+    filepclock.month = timec.tm_mon + 1;
+    filepclock.day = timec.tm_mday;
+    filepclock.hour = timec.tm_hour;
+    filepclock.minute = timec.tm_min;
+    filepclock.second = timec.tm_sec;
+    filepclock.week = timec.tm_wday;
+
+    second = SysClockDifference(&currentclock,&filepclock);
+    MaxDays = ParaTermG.Musicmonth*2592000;
+    PrintLog(0,"getFileDays second: %d\n",second);
+    if(second>MaxDays)
+        return 1;
+    else
+        return 0;
+
+
 }
 /*
 utime_t time_mntou(mntime_t *ptime)
 {
-	unsigned int year, day;
-	unsigned int cal;
-	unsigned char i, j;
-	
-	year = (unsigned int)(ptime->year);
-	if(year != 0) day = ((year-1)>>2) + 1;
-	else day = 0;
-	cal = year *365 + day; //days
-	day = cal;
+    unsigned int year, day;
+    unsigned int cal;
+    unsigned char i, j;
 
-	j = ptime->month;
-	for(i=1; i<j; i++)
-	{
-		if(2 == i)
-		{
-			if(0 == (ptime->year & 0x03)) day += 29;
-			else day += 28;
-		}
-		else if(i < 8)
-		{
-			if(i&0x01) day += 31;
-			else day += 30;
-		}
-		else
-		{
-			if(i&0x01) day += 30;
-			else day += 31;
-		}
-	}
+    year = (unsigned int)(ptime->year);
+    if(year != 0) day = ((year-1)>>2) + 1;
+    else day = 0;
+    cal = year *365 + day; //days
+    day = cal;
 
-	if(0 != ptime->day) day += ptime->day - 1;
+    j = ptime->month;
+    for(i=1; i<j; i++)
+    {
+        if(2 == i)
+        {
+            if(0 == (ptime->year & 0x03)) day += 29;
+            else day += 28;
+        }
+        else if(i < 8)
+        {
+            if(i&0x01) day += 31;
+            else day += 30;
+        }
+        else
+        {
+            if(i&0x01) day += 30;
+            else day += 31;
+        }
+    }
 
-	cal = day*1440;
+    if(0 != ptime->day) day += ptime->day - 1;
 
-	day = ptime->hour;
-	day *= 60;
-	cal += day;
+    cal = day*1440;
 
-	cal += ptime->minute;
+    day = ptime->hour;
+    day *= 60;
+    cal += day;
 
-	return (utime_t)cal;
-	
+    cal += ptime->minute;
+
+    return (utime_t)cal;
+
 }
 static int time_caldays(mntime_t *ptime)
 {
-	int year, day;
-	int cal;
-	unsigned char i, j;
+    int year, day;
+    int cal;
+    unsigned char i, j;
 
-	if(ptime->year > 99)
-		return 0;
-	if((ptime->month == 0) || (ptime->month > 12))
-		return 0;
-	if((ptime->day == 0) || (ptime->day > 31))
-		return 0;
-	
-	year = (int)(ptime->year);
-	if(year > 0)
-		day = (year-1)/4 + 1;
-	else
-		day = 0;
-	cal = year *365 + day; //days
+    if(ptime->year > 99)
+        return 0;
+    if((ptime->month == 0) || (ptime->month > 12))
+        return 0;
+    if((ptime->day == 0) || (ptime->day > 31))
+        return 0;
 
-	j = ptime->month;
-	day = 0;
-	for(i=1; i<j; i++)
-	{
-		if(2 == i)
-		{
-			if(0 == (ptime->year % 4))
-				day += 29;
-			else
-				day += 28;
-		}
-		else if(i < 8)
-		{
-			if(i%2)
-				day += 31;
-			else
-				day += 30;
-		}
-		else
-		{
-			if(i%2)
-				day += 30;
-			else
-				day += 31;
-		}
-	}
-	cal += day;
-	day = ptime->day;
-	day--;
-	cal += day;
+    year = (int)(ptime->year);
+    if(year > 0)
+        day = (year-1)/4 + 1;
+    else
+        day = 0;
+    cal = year *365 + day; //days
 
-	return cal;
+    j = ptime->month;
+    day = 0;
+    for(i=1; i<j; i++)
+    {
+        if(2 == i)
+        {
+            if(0 == (ptime->year % 4))
+                day += 29;
+            else
+                day += 28;
+        }
+        else if(i < 8)
+        {
+            if(i%2)
+                day += 31;
+            else
+                day += 30;
+        }
+        else
+        {
+            if(i%2)
+                day += 30;
+            else
+                day += 31;
+        }
+    }
+    cal += day;
+    day = ptime->day;
+    day--;
+    cal += day;
+
+    return cal;
 }
 
 unsigned char time_getweek(mntime_t *ptime)
 {
-	int days;
+    int days;
 
-	days = time_caldays(ptime);
-	//0~6, 周一~周日
-	//2000.1.1 周六
-	days += 5;
+    days = time_caldays(ptime);
+    //0~6, 周一~周日
+    //2000.1.1 周六
+    days += 5;
 
-	days %= 7;
+    days %= 7;
 
-	return((unsigned char)days);
+    return((unsigned char)days);
 }
 
 */
@@ -647,14 +647,14 @@ unsigned char time_getweek(mntime_t *ptime)
 DECLARE_INIT_FUNC(SysTimeInit);
 int SysTimeInit(void)
 {
-	system("hwclock -s");
-	if(SysClockRead(&ClockSysStart)) return 1;
+    system("hwclock -s");
+    if(SysClockRead(&ClockSysStart)) return 1;
 
-	SysClockSet(&ClockSysStart);
+    SysClockSet(&ClockSysStart);
 
-	SET_INIT_FLAG(SysTimeInit);
+    SET_INIT_FLAG(SysTimeInit);
 
-	return 0;
+    return 0;
 }
 
 

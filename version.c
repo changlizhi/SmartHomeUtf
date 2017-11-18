@@ -9,7 +9,7 @@
 #include "include/version.h"
 
 const char * VerStringProj[] = {
-	"南网通用",
+    "南网通用",
 };
 const char *hard_cpu="ARM9260";//CPU类型
 const char *hard_type="1102";//硬件类型

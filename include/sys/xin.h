@@ -10,7 +10,7 @@
 #define _XIN_H
 
 //文件索引指针
-#define XINREF		char *
+#define XINREF        char *
 
 /**
 * @brief 打开配置文件

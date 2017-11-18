@@ -3,7 +3,7 @@
 
 #define LEN_FAAL_HEAD    10
 #define LEN_FAAL_RDTNHD    8
-#define LEN_FAAL_HEAD_CHK		4
+#define LEN_FAAL_HEAD_CHK        4
 
 #define FAAL_HEAD    0x68
 #define FAAL_TAIL    0x16
@@ -38,8 +38,8 @@
 #define FAALCMD_ECHO_LOGIN    0xa5
 
 //心跳
-#define FAALCMD_HEARTBEAT   		0x23
-#define FAALCMD_ECHO_HEARTBEAT    	0xa3
+#define FAALCMD_HEARTBEAT           0x23
+#define FAALCMD_ECHO_HEARTBEAT        0xa3
 
 #define FAALCMD_RDTN    0x01
 
@@ -47,23 +47,23 @@
 #define FAALCMD_ECHO_WROBJ    0x88
 typedef struct   __attribute__((packed)){
 //typedef struct{
-	unsigned short tn;
-	unsigned char aut;
-	unsigned char pw[3];
-	unsigned char data[1];
+    unsigned short tn;
+    unsigned char aut;
+    unsigned char pw[3];
+    unsigned char data[1];
 } faal_wrobj_t;
 
 #define FAALCMD_WRREALOBJ    0x07
 #define FAALCMD_ECHO_WRREALOBJ    0x87
 typedef struct __attribute__((packed)){
 //typedef struct{
-	//unsigned char tn;
-	unsigned short tn;
-	unsigned char aut;
-	unsigned char pw[3];
-	mntime_t time;
-	unsigned char timeout;
-	unsigned char data[1];
+    //unsigned char tn;
+    unsigned short tn;
+    unsigned char aut;
+    unsigned char pw[3];
+    mntime_t time;
+    unsigned char timeout;
+    unsigned char data[1];
 } faal_wrrealobj_t;
 
 /*集中器远程升级,把原来协议把功能码0F(短信功能暂时定为远程升级)*/
@@ -76,16 +76,16 @@ typedef struct __attribute__((packed)){
 #define FAALCMD_ECHO_REALRD 0x91
 
 /*主站回复设备验证结果*/
-#define FAALCMD_SOFTWAREVER 		0x04
-#define FAALCMD_ECHO_DEVICECHECK 	0x84
+#define FAALCMD_SOFTWAREVER         0x04
+#define FAALCMD_ECHO_DEVICECHECK     0x84
 
 /*主站回复设备验证结果*/
-#define FAALCMD_DEVICECHECK 		0x01
-#define FAALCMD_ECHO_DEVICECHECK 	0x81
+#define FAALCMD_DEVICECHECK         0x01
+#define FAALCMD_ECHO_DEVICECHECK     0x81
 
 
 /*主站下发设置音频文件*/
-#define FAALCMD_UPDATEAUDIOSTR 		0x03
+#define FAALCMD_UPDATEAUDIOSTR         0x03
 #define FAALCMD_ECHO_UPDATEAUDIOSTR 0x83
 
 
@@ -123,17 +123,17 @@ typedef struct __attribute__((packed)){
 #define FAALCMD_QRYALM 0x09
 #define FAALCMD_ECHO_QRYALM 0x89
 typedef struct {
-	unsigned char year;
-	unsigned char month;
-	unsigned char day;
-	unsigned char hour;
-	unsigned char min;	
-	unsigned char num;
+    unsigned char year;
+    unsigned char month;
+    unsigned char day;
+    unsigned char hour;
+    unsigned char min;
+    unsigned char num;
 } faal_qryalm_t;
 #define LEN_FAAL_SALMHD    1
 typedef struct {
-	unsigned char num;
-	unsigned char data[1];
+    unsigned char num;
+    unsigned char data[1];
 } faal_salmhd_t;
 /*取消召测命令*/
 #define FAALCMD_CMDCANCEL 0x20
@@ -143,20 +143,20 @@ typedef struct {
 
 typedef struct __attribute__((packed)){
 //typedef union{
-	struct
-	{
-		unsigned char sele[2];
-		unsigned char year;
-		unsigned char mon;
-		unsigned char day;
-		unsigned char dat[1];
-	}read;
-	struct
-	{
-		unsigned char sele[2];
-		unsigned char frame[1];
-	}
-	resnd;
+    struct
+    {
+        unsigned char sele[2];
+        unsigned char year;
+        unsigned char mon;
+        unsigned char day;
+        unsigned char dat[1];
+    }read;
+    struct
+    {
+        unsigned char sele[2];
+        unsigned char frame[1];
+    }
+    resnd;
 }readfreedata_t;
 
 /*集中器抄收电表表号*/
@@ -165,8 +165,8 @@ typedef struct __attribute__((packed)){
 //typedef struct
 typedef struct __attribute__((packed))
 {
-	unsigned short mid;
-	unsigned short num;
+    unsigned short mid;
+    unsigned short num;
 }faal_rdminfo_t;
 
 /*错误码定义*/
@@ -181,25 +181,25 @@ typedef struct __attribute__((packed))
 #define FAALERR_SMSLONG    0x13    /*短消息帧太长*/
 
 typedef struct {
-	unsigned char city_no;
-	unsigned char county_no;
-	unsigned char sn[2];
+    unsigned char city_no;
+    unsigned char county_no;
+    unsigned char sn[2];
 } rtua_t;
 
 typedef struct __attribute__((packed)){
 //typedef struct{
-	unsigned char head;  //=68H
-	unsigned char ver;
-	unsigned char addr[4];  //addr
-	unsigned char dep;    //=68H
-	unsigned char cmd;
-	unsigned char len[2];
-	unsigned char data[5];
+    unsigned char head;  //=68H
+    unsigned char ver;
+    unsigned char addr[4];  //addr
+    unsigned char dep;    //=68H
+    unsigned char cmd;
+    unsigned char len[2];
+    unsigned char data[5];
 } faalpkt_t;
 
 typedef struct{
-	unsigned char tnflag[8];
-	unsigned char item[1];
+    unsigned char tnflag[8];
+    unsigned char item[1];
 } faal_rdtn_t;
 
 

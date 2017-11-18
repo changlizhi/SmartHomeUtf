@@ -18,7 +18,7 @@ extern int GpioInit(void);
 DECLARE_INIT_FUNC(DriverHighInit);
 int DriverHighInit(void)
 {
-	if(GpioInit()) return 1;
-	SET_INIT_FLAG(DriverHighInit);
-	return 0;
+    if(GpioInit()) return 1;
+    SET_INIT_FLAG(DriverHighInit);
+    return 0;
 }

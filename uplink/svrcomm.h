@@ -15,8 +15,8 @@ int SvrNoteProc(unsigned char itf);
 
 void SvrMessageProc(unsigned char itf);
 
-#define LINESTAT_OFF    	0
-#define LINESTAT_ON    	1
+#define LINESTAT_OFF        0
+#define LINESTAT_ON        1
 extern int SvrCommLineState;
 extern unsigned char UpMetStateFlag[8];
 extern unsigned char SvrCommInterface;

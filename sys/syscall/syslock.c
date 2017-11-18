@@ -20,15 +20,15 @@ static sys_mutex_t SysLock[MAX_SYSLOCK];
 */
 int RegisterSysLock(void)
 {
-	int i;
+    int i;
 
-	AssertLogReturn(SysLockNum>=MAX_SYSLOCK, -1, "syslock too much\n");
+    AssertLogReturn(SysLockNum>=MAX_SYSLOCK, -1, "syslock too much\n");
 
-	i = SysLockNum;
-	SysInitMutex(&SysLock[i]);
-	SysLockNum++;
+    i = SysLockNum;
+    SysInitMutex(&SysLock[i]);
+    SysLockNum++;
 
-	return(i);
+    return(i);
 }
 
 /**
@@ -37,12 +37,12 @@ int RegisterSysLock(void)
 */
 void LockSysLock(int id)
 {
-	if((id < 0) || (id >= SysLockNum)) {
-		ErrorLog("invalid id(%d)\n", id);
-		return;
-	}
+    if((id < 0) || (id >= SysLockNum)) {
+        ErrorLog("invalid id(%d)\n", id);
+        return;
+    }
 
-	SysLockMutex(&SysLock[id]);
+    SysLockMutex(&SysLock[id]);
 }
 
 /**
@@ -51,12 +51,12 @@ void LockSysLock(int id)
 */
 void UnlockSysLock(int id)
 {
-	if((id < 0) || (id >= SysLockNum)) {
-		ErrorLog("invalid id(%d)\n", id);
-		return;
-	}
+    if((id < 0) || (id >= SysLockNum)) {
+        ErrorLog("invalid id(%d)\n", id);
+        return;
+    }
 
-	SysUnlockMutex(&SysLock[id]);
+    SysUnlockMutex(&SysLock[id]);
 }
 
 /**
@@ -64,10 +64,10 @@ void UnlockSysLock(int id)
 */
 void SysLockHalt(void)
 {
-	int i;
+    int i;
 
-	for(i=0; i<SysLockNum; i++) {
-		SysLockMutex(&SysLock[i]);
-	}
+    for(i=0; i<SysLockNum; i++) {
+        SysLockMutex(&SysLock[i]);
+    }
 }
 

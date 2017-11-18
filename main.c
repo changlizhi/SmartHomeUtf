@@ -37,32 +37,32 @@ int   exitflag = 0;
 static void startup(void)
 {
 
-	if(SysInit())
-	{
-		return;
-	}
+    if(SysInit())
+    {
+        return;
+    }
 
-	if(DebugInit())
-	{
-		return;
-	}
-	if(ParamInit())
-	{
-		return;
-	}
-	MonitorInit();
+    if(DebugInit())
+    {
+        return;
+    }
+    if(ParamInit())
+    {
+        return;
+    }
+    MonitorInit();
 
-	
-	SvrCommInit();
-	CheckInitFlag();
-	{
-		sysclock_t clock;
 
-		if(SysClockRead(&clock)) PrintLog(0,"read system clock failed.\n");
-		else PrintLog(0,"current time = %s\n", SysClockFormat(&clock));
-	}
-	
-	SysWaitTaskEnd();
+    SvrCommInit();
+    CheckInitFlag();
+    {
+        sysclock_t clock;
+
+        if(SysClockRead(&clock)) PrintLog(0,"read system clock failed.\n");
+        else PrintLog(0,"current time = %s\n", SysClockFormat(&clock));
+    }
+
+    SysWaitTaskEnd();
 
 }
 /**
@@ -77,13 +77,13 @@ static void startup(void)
 
 static void ParseArgs(int argc, char *argv[])
 {
-	int i;
+    int i;
 
-	for(i=1; i<argc; i++) {
-		if('-' != argv[i][0] || 0 == argv[i][1]) continue;
+    for(i=1; i<argc; i++) {
+        if('-' != argv[i][0] || 0 == argv[i][1]) continue;
 
-		SetStartArg(argv[i]+1);
-	}
+        SetStartArg(argv[i]+1);
+    }
 }
 
 
@@ -96,28 +96,28 @@ static void ParseArgs(int argc, char *argv[])
 */
 int main(int argc, char *argv[])
 {
-	printf("\n\n");
-	printf("\033[1;32m" "深圳XX公司\n");
-	printf("Relase Date: 20%02d-%d-%d %d:%d %s \033[0m\n\n", 
-		_mk_year, _mk_month, _mk_day, _mk_hour, _mk_minute, VersionDebugInfo);
+    printf("\n\n");
+    printf("\033[1;32m" "深圳XX公司\n");
+    printf("Relase Date: 20%02d-%d-%d %d:%d %s \033[0m\n\n",
+        _mk_year, _mk_month, _mk_day, _mk_hour, _mk_minute, VersionDebugInfo);
 
-	ParseArgs(argc, argv);
-	if(MakeDeviceCode() !=0)//计算产生设备地址.
-	{
-		printf("应用程序非法,启动失败\n\n");
-		return 0; 
-	}
+    ParseArgs(argc, argv);
+    if(MakeDeviceCode() !=0)//计算产生设备地址.
+    {
+        printf("应用程序非法,启动失败\n\n");
+        return 0;
+    }
 
-	if(!GetStartArg('b', NULL, 0))//后台运行
-	{ 
-		if(fork() == 0) 
-		{
-			startup();
-		}
-	}
-	else //非后台运行
-	{
-		startup();
-	}
-	return 0;
+    if(!GetStartArg('b', NULL, 0))//后台运行
+    {
+        if(fork() == 0)
+        {
+            startup();
+        }
+    }
+    else //非后台运行
+    {
+        startup();
+    }
+    return 0;
 }

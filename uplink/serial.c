@@ -20,7 +20,7 @@
 #include "uplink_dl.h"
 #include "svrcomm.h"
 #include "include/param/unique.h"
-#define  QRCODE_UART	 UART_QRCODE //	4
+#define  QRCODE_UART     UART_QRCODE //    4
 
 static int SerialStarted = 0;
 
@@ -29,30 +29,30 @@ static int SerialStarted = 0;
 */
 void SerialActiveTask(void)
 {
-	unsigned long ev;
+    unsigned long ev;
 
-	if(!SerialStarted) {
-		ErrorLog("Serial not start, return\n");
-		return;
-	}
+    if(!SerialStarted) {
+        ErrorLog("Serial not start, return\n");
+        return;
+    }
 
-	UplinkClearState(UPLINKITF_SERIAL);
+    UplinkClearState(UPLINKITF_SERIAL);
 
-	while(1) {
-		SvrCommPeekEvent(SVREV_NOTE, &ev);
+    while(1) {
+        SvrCommPeekEvent(SVREV_NOTE, &ev);
 
-		if(ev&SVREV_NOTE) {
-			SvrNoteProc(UPLINKITF_SERIAL);
-		}
+        if(ev&SVREV_NOTE) {
+            SvrNoteProc(UPLINKITF_SERIAL);
+        }
 
-		if(!UplinkRecvPkt(UPLINKITF_SERIAL)) {
-			SvrMessageProc(UPLINKITF_SERIAL);
-		}
+        if(!UplinkRecvPkt(UPLINKITF_SERIAL)) {
+            SvrMessageProc(UPLINKITF_SERIAL);
+        }
 
-		Sleep(10);
-	}
+        Sleep(10);
+    }
 
-	return;
+    return;
 }
 
 /**
@@ -60,33 +60,33 @@ void SerialActiveTask(void)
 */
 static void *SerialPassiveTask(void *arg)
 {
-	char qrcodebuf[512]={0};
-	int  recvlen = 0;
-	memset(qrcodebuf, 0, 512);
-	if(!SerialStarted) {
-		ErrorLog("Serial not start, return\n");
-		return 0;
-	}
-	UplinkClearState(UPLINKITF_SERIAL);
+    char qrcodebuf[512]={0};
+    int  recvlen = 0;
+    memset(qrcodebuf, 0, 512);
+    if(!SerialStarted) {
+        ErrorLog("Serial not start, return\n");
+        return 0;
+    }
+    UplinkClearState(UPLINKITF_SERIAL);
 
-	Sleep(100);
+    Sleep(100);
 
-	while(1) {
+    while(1) {
 
-		recvlen = UartRecv(QRCODE_UART, qrcodebuf, 512);
-		if(recvlen > 50)  //收到二维码命令
-		{
-			
-			if( !strncmp(qrcodebuf, "GM", 2) ) //柜门
-			{
-				qrcodeValidity(qrcodebuf);
-			}
-		}
-		memset(qrcodebuf, 0, 512);
-		
-		Sleep(10);
-	}
-	return 0;
+        recvlen = UartRecv(QRCODE_UART, qrcodebuf, 512);
+        if(recvlen > 50)  //收到二维码命令
+        {
+
+            if( !strncmp(qrcodebuf, "GM", 2) ) //柜门
+            {
+                qrcodeValidity(qrcodebuf);
+            }
+        }
+        memset(qrcodebuf, 0, 512);
+
+        Sleep(10);
+    }
+    return 0;
 }
 
 /**
@@ -98,18 +98,18 @@ static void *SerialPassiveTask(void *arg)
 DECLARE_INIT_FUNC(UplinkSerialStart);
 int UplinkSerialStart(void)
 {
-	if(UartOpen(QRCODE_UART)) {
-		PrintLog(0,"can not open uart %d\n", QRCODE_UART);
-		return 1;
-	}
-	UartSet(QRCODE_UART, 115200, 8, 1, 'n');
-	SerialStarted = 1;
-	if(1) {
-		SysCreateTask(SerialPassiveTask, NULL);
-	}
+    if(UartOpen(QRCODE_UART)) {
+        PrintLog(0,"can not open uart %d\n", QRCODE_UART);
+        return 1;
+    }
+    UartSet(QRCODE_UART, 115200, 8, 1, 'n');
+    SerialStarted = 1;
+    if(1) {
+        SysCreateTask(SerialPassiveTask, NULL);
+    }
 
-	SET_INIT_FLAG(UplinkSerialStart);
-	return 0;
+    SET_INIT_FLAG(UplinkSerialStart);
+    return 0;
 }
 
 /**
@@ -119,8 +119,8 @@ int UplinkSerialStart(void)
 */
 int SerialGetChar(unsigned char *buf)
 {
-	if(UartRecv(QRCODE_UART, buf, 1) > 0) return 0;
-	else return 1;
+    if(UartRecv(QRCODE_UART, buf, 1) > 0) return 0;
+    else return 1;
 }
 
 /**
@@ -131,7 +131,7 @@ int SerialGetChar(unsigned char *buf)
 */
 int SerialRawSend(const unsigned char *buf, int len)
 {
-	return(UartSend(QRCODE_UART, buf, len));
+    return(UartSend(QRCODE_UART, buf, len));
 }
 
 

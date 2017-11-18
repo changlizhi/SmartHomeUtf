@@ -11,8 +11,8 @@
 
 static void DummyFunc(void)
 {
-	//printf("cycle save dummy func\n");
-	return;
+    //printf("cycle save dummy func\n");
+    return;
 }
 DECLARE_CYCLE_SAVE(DummyFunc, 0);
 
@@ -25,14 +25,14 @@ extern const struct cycle_save __stop__cycle_save[];
 */
 void SysCycleSave(int flag)
 {
-	unsigned int i;
+    unsigned int i;
 
-	for(i=0; __start__cycle_save+i<__stop__cycle_save; i++) 
-	{
-		if(__start__cycle_save[i].flag & CYCSAVE_FLAG_RESET) {
-			if(flag) (__start__cycle_save[i].pfunc)();
-		}
-		else (__start__cycle_save[i].pfunc)();
-	}
+    for(i=0; __start__cycle_save+i<__stop__cycle_save; i++)
+    {
+        if(__start__cycle_save[i].flag & CYCSAVE_FLAG_RESET) {
+            if(flag) (__start__cycle_save[i].pfunc)();
+        }
+        else (__start__cycle_save[i].pfunc)();
+    }
 }
 

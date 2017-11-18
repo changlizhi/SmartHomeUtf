@@ -19,9 +19,9 @@ extern int MonitorTaskInit(void);
 DECLARE_INIT_FUNC(MonitorInit);
 int MonitorInit(void)
 {
-	PrintLog(0,"monitor init...\n");
-	MonitorTaskInit();
+    PrintLog(0,"monitor init...\n");
+    MonitorTaskInit();
 
-	SET_INIT_FLAG(MonitorInit);
-	return 0;
+    SET_INIT_FLAG(MonitorInit);
+    return 0;
 }

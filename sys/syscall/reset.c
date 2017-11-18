@@ -23,28 +23,28 @@ extern void EnableFeedWatchdog(int flag);
 
 void SysRestart(void)
 {
-	PrintLog(0,"sysrestart...\r\n");
-	SysCycleSave(1);
-	SysLockHalt();
-	
-	EnableFeedWatchdog(0);
-	reboot(LINUX_REBOOT_CMD_RESTART);
+    PrintLog(0,"sysrestart...\r\n");
+    SysCycleSave(1);
+    SysLockHalt();
 
-	Sleep(500);
-	exit(0);
+    EnableFeedWatchdog(0);
+    reboot(LINUX_REBOOT_CMD_RESTART);
+
+    Sleep(500);
+    exit(0);
 }
 
 void SysPowerDown(void)
 {
-	PrintLog(0,"sysPowerdown...\r\n");
+    PrintLog(0,"sysPowerdown...\r\n");
 
-	SysCycleSave(1);
-	SysLockHalt();
+    SysCycleSave(1);
+    SysLockHalt();
 
-	EnableFeedWatchdog(0);
+    EnableFeedWatchdog(0);
 
-	reboot(LINUX_REBOOT_CMD_RESTART);
+    reboot(LINUX_REBOOT_CMD_RESTART);
 
-	Sleep(500);
-	exit(0);
+    Sleep(500);
+    exit(0);
 }

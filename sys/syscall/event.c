@@ -16,9 +16,9 @@
 */
 void SysInitEvent(sys_event_t *pctrl)
 {
-	pthread_mutex_init(&pctrl->mutex, NULL);
-	pthread_cond_init(&pctrl->cond, NULL);
-	pctrl->event = 0;
+    pthread_mutex_init(&pctrl->mutex, NULL);
+    pthread_cond_init(&pctrl->cond, NULL);
+    pctrl->event = 0;
 }
 
 /**
@@ -32,40 +32,40 @@ void SysInitEvent(sys_event_t *pctrl)
 */
 void SysWaitEvent(sys_event_t *pctrl, int bwait, unsigned long waitmask, unsigned long *pevent)
 {
-	unsigned long ul;
+    unsigned long ul;
 
-	pthread_mutex_lock(&pctrl->mutex);
+    pthread_mutex_lock(&pctrl->mutex);
 
-	ul = pctrl->event;
+    ul = pctrl->event;
 
-	if(!bwait) 
-	{
-		if(ul&waitmask) 
-		{
-			ul &= waitmask;
-			pctrl->event &= ~waitmask;
-		}
-		else ul = 0;
-	}
-	else 
-	{
-		while(1) 
-		{
-			if(ul&waitmask) 
-			{
-				ul &= waitmask;
-				pctrl->event &= ~waitmask;
-				break;
-			}
+    if(!bwait)
+    {
+        if(ul&waitmask)
+        {
+            ul &= waitmask;
+            pctrl->event &= ~waitmask;
+        }
+        else ul = 0;
+    }
+    else
+    {
+        while(1)
+        {
+            if(ul&waitmask)
+            {
+                ul &= waitmask;
+                pctrl->event &= ~waitmask;
+                break;
+            }
 
-			pthread_cond_wait(&pctrl->cond, &pctrl->mutex);
-			ul = pctrl->event;
-		}
-	}
+            pthread_cond_wait(&pctrl->cond, &pctrl->mutex);
+            ul = pctrl->event;
+        }
+    }
 
-	pthread_mutex_unlock(&pctrl->mutex);
+    pthread_mutex_unlock(&pctrl->mutex);
 
-	*pevent = ul;
+    *pevent = ul;
 }
 
 /**
@@ -75,8 +75,8 @@ void SysWaitEvent(sys_event_t *pctrl, int bwait, unsigned long waitmask, unsigne
 */
 void SysSendEvent(sys_event_t *pctrl, unsigned long event)
 {
-	pthread_mutex_lock(&pctrl->mutex);
-	pctrl->event |= event;
-	pthread_cond_signal(&pctrl->cond);
-	pthread_mutex_unlock(&pctrl->mutex);
+    pthread_mutex_lock(&pctrl->mutex);
+    pctrl->event |= event;
+    pthread_cond_signal(&pctrl->cond);
+    pthread_mutex_unlock(&pctrl->mutex);
 }

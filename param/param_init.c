@@ -22,18 +22,18 @@ extern int ParamSaveInit(void);
 DECLARE_INIT_FUNC(ParamInit);
 int ParamInit(void)
 {
-	PrintLog(0,"load param ...\n");
-	PrintLog(0,"  LoadParaUni ...\n");
-	LoadParaUni();//读自定义参数
-	PrintLog(0,"  LoadParaTerm ...\n");
-	LoadParaTerm(); //读文件中的终端 配置参数信息 
-//	LoadParaDataUse();	//读取情景列表
-//	LoadParaTimerTask();//读取定时任务
-	
-	Sleep(500);
-	if(ParamSaveInit()) return 1;
-	SET_INIT_FLAG(ParamInit);	
-	return 0;
+    PrintLog(0,"load param ...\n");
+    PrintLog(0,"  LoadParaUni ...\n");
+    LoadParaUni();//读自定义参数
+    PrintLog(0,"  LoadParaTerm ...\n");
+    LoadParaTerm(); //读文件中的终端 配置参数信息
+//    LoadParaDataUse();    //读取情景列表
+//    LoadParaTimerTask();//读取定时任务
+
+    Sleep(500);
+    if(ParamSaveInit()) return 1;
+    SET_INIT_FLAG(ParamInit);
+    return 0;
 }
 
 

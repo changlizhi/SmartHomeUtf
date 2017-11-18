@@ -34,44 +34,44 @@ static unsigned char Rs485BusBuffer[RS485BUS_BUF_LEN];
 */
 int RFMetRead(const plc_dest_t *dest, unsigned long itemid, unsigned char *buf, int len)
 {
-	int rtn,portnum;
-	unsigned short crc;
-	unsigned char 	port;
-	unsigned short 	metid;
-	metid	=	dest->metid;
-	unsigned char  modbusbuf[8] = {0};
-	if(metid > MAX_METER) {
-		return -1;
-	}
+    int rtn,portnum;
+    unsigned short crc;
+    unsigned char     port;
+    unsigned short     metid;
+    metid    =    dest->metid;
+    unsigned char  modbusbuf[8] = {0};
+    if(metid > MAX_METER) {
+        return -1;
+    }
 
-	modbusbuf[0] = metid;
-	modbusbuf[1] = itemid;
-	modbusbuf[5] = 0x02;	
-	crc = GetCRC16(modbusbuf,6);
-	if(metid == 240 || metid  == 241)
-	{
-		modbusbuf[6] = crc>>8;
-		modbusbuf[7] = crc;
-	}
-	else
-	{
-		modbusbuf[6] = crc;
-		modbusbuf[7] = crc>>8;
-	}
+    modbusbuf[0] = metid;
+    modbusbuf[1] = itemid;
+    modbusbuf[5] = 0x02;
+    crc = GetCRC16(modbusbuf,6);
+    if(metid == 240 || metid  == 241)
+    {
+        modbusbuf[6] = crc>>8;
+        modbusbuf[7] = crc;
+    }
+    else
+    {
+        modbusbuf[6] = crc;
+        modbusbuf[7] = crc>>8;
+    }
 
-	PrintHexLog(0,modbusbuf,8);
-	portnum = dest->portcfg;
-	port = portnum;
-	
-	Rs485Lock(port);
-	Sleep(10);
-	while(Rs485Recv(port, buf, 1) > 0);
+    PrintHexLog(0,modbusbuf,8);
+    portnum = dest->portcfg;
+    port = portnum;
 
-	rtn = Rs485Send(port,modbusbuf,8);
+    Rs485Lock(port);
+    Sleep(10);
+    while(Rs485Recv(port, buf, 1) > 0);
 
-	Rs485Unlock(port);
+    rtn = Rs485Send(port,modbusbuf,8);
 
-	return rtn;		
+    Rs485Unlock(port);
+
+    return rtn;
 }
 
 /**
@@ -82,49 +82,49 @@ int RFMetRead(const plc_dest_t *dest, unsigned long itemid, unsigned char *buf, 
 */
 int RFMetCtrl(const plc_dest_t *dest,unsigned long itemid,unsigned char *buf,int len)
 {
-	int rtn,portnum;
-	unsigned short crc;
-	unsigned char 	port;
-	unsigned short 	metid;
-	metid	=	dest->metid;
-	unsigned char  modbusbuf[8] = {0};
-	if(metid > MAX_METER) {
-		return -1;
-	}
+    int rtn,portnum;
+    unsigned short crc;
+    unsigned char     port;
+    unsigned short     metid;
+    metid    =    dest->metid;
+    unsigned char  modbusbuf[8] = {0};
+    if(metid > MAX_METER) {
+        return -1;
+    }
 
-	modbusbuf[0] = metid;
-	modbusbuf[1] = itemid;
-	modbusbuf[2] = buf[0];
-	modbusbuf[3] = buf[1];
-	modbusbuf[4] = buf[2];
-	modbusbuf[5] = buf[3];
-	
-	crc = GetCRC16(modbusbuf,6);
-	
-	if(metid == 240 || metid  == 241)
-	{
-		modbusbuf[6] = crc>>8;
-		modbusbuf[7] = crc;
-	}
-	else
-	{
-		modbusbuf[6] = crc;
-		modbusbuf[7] = crc>>8;
-	}
-	
-	portnum = dest->portcfg;
-	port = portnum;
-	
-	Rs485Lock(port);
-	Sleep(10);
-	while(Rs485Recv(port, buf, 1) > 0);
+    modbusbuf[0] = metid;
+    modbusbuf[1] = itemid;
+    modbusbuf[2] = buf[0];
+    modbusbuf[3] = buf[1];
+    modbusbuf[4] = buf[2];
+    modbusbuf[5] = buf[3];
 
-	rtn = Rs485Send(port,modbusbuf,8);
+    crc = GetCRC16(modbusbuf,6);
 
-	Rs485Unlock(port);
+    if(metid == 240 || metid  == 241)
+    {
+        modbusbuf[6] = crc>>8;
+        modbusbuf[7] = crc;
+    }
+    else
+    {
+        modbusbuf[6] = crc;
+        modbusbuf[7] = crc>>8;
+    }
 
-	return rtn;			
-	
-	
+    portnum = dest->portcfg;
+    port = portnum;
+
+    Rs485Lock(port);
+    Sleep(10);
+    while(Rs485Recv(port, buf, 1) > 0);
+
+    rtn = Rs485Send(port,modbusbuf,8);
+
+    Rs485Unlock(port);
+
+    return rtn;
+
+
 }
 

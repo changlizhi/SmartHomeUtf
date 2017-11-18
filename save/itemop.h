@@ -5,14 +5,14 @@
 #define ITEMOP_LOWLEVEL    0
 #define ITEMOP_HIGHLEVEL    0x11
 typedef struct {
-	unsigned short id;  //数据项标识
-	unsigned short maxlen;   //缓存区最大长度
-	unsigned char *buf;   //缓存指针
-	unsigned short actlen;   //操作后实际数据长度
-	//unsigned char mid;   //测量点号
-	unsigned short mid;
-	unsigned char level;   //操作级别
-	unsigned char itf;   //操作所在接口
+    unsigned short id;  //数据项标识
+    unsigned short maxlen;   //缓存区最大长度
+    unsigned char *buf;   //缓存指针
+    unsigned short actlen;   //操作后实际数据长度
+    //unsigned char mid;   //测量点号
+    unsigned short mid;
+    unsigned char level;   //操作级别
+    unsigned char itf;   //操作所在接口
 } itemop_t;
 
 

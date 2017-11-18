@@ -21,11 +21,11 @@ DECLARE_INIT_FUNC(StorageInit);
 int StorageInit(void)
 {
 
-	if(XinInit()) return 1;
-	if(FlatInit()) return 1;
+    if(XinInit()) return 1;
+    if(FlatInit()) return 1;
 
-	SET_INIT_FLAG(StorageInit);
+    SET_INIT_FLAG(StorageInit);
 
-	return 0;
+    return 0;
 }
 

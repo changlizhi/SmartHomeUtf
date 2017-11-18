@@ -10,11 +10,11 @@
 #define _STORAGE_GRPBIN_H
 
 typedef struct {
-	char *pfile;
-	int itemlen;  //项目长度
-	int itemnum;  //项目数目
-	unsigned short crctemp;
-	char flag;
+    char *pfile;
+    int itemlen;  //项目长度
+    int itemnum;  //项目数目
+    unsigned short crctemp;
+    char flag;
 } grpbin_ref_t;
 
 /**

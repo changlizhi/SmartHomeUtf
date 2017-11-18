@@ -11,28 +11,28 @@
 #define SVRADDR_CSD    7    //GSM CSD
 #define SVRADDR_RADIO    8    //无线
 #define SVRADDR_SMSWAKE    9    //短信唤醒
-//#define SVRADDR_METCHK		10   //485校表
+//#define SVRADDR_METCHK        10   //485校表
 #if 0
 typedef union {
-	struct {
-		unsigned char chn;    //通道类型
-		unsigned char uc[15];
-	} mix;
+    struct {
+        unsigned char chn;    //通道类型
+        unsigned char uc[15];
+    } mix;
 
-	struct __attribute__((packed)){
-		unsigned char chn;   //通道类型
-		unsigned char reserv;
-		unsigned char reserv2;
-		unsigned int ip;   //IP
-		unsigned short port;   //端口号
-	} net;
+    struct __attribute__((packed)){
+        unsigned char chn;   //通道类型
+        unsigned char reserv;
+        unsigned char reserv2;
+        unsigned int ip;   //IP
+        unsigned short port;   //端口号
+    } net;
 
-	struct {
-		unsigned char chn;
-		unsigned char phone[8];  //电话号码
-	} sms;
+    struct {
+        unsigned char chn;
+        unsigned char phone[8];  //电话号码
+    } sms;
 
-	#define channel    mix.chn
+    #define channel    mix.chn
 } svraddr_t;
 #endif
 

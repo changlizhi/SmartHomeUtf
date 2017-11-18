@@ -12,8 +12,8 @@
 #define CYCSAVE_FLAG_RESET   0x00000001  //仅在复位前调用
 
 struct cycle_save {
-	void (*pfunc)(void);
-	unsigned int flag;
+    void (*pfunc)(void);
+    unsigned int flag;
 };
 
 /**
@@ -22,10 +22,10 @@ struct cycle_save {
 * @param flag 为0表示正常周期执行, 为CYCSAVE_FLAG_RESET表示仅在复位前调用
 */
 #define DECLARE_CYCLE_SAVE(func, flag) \
-	static const struct cycle_save _cycsave_##func \
-	__attribute__((__used__)) \
-	__attribute__((section("_cycle_save"), unused)) \
-	= {func, flag}
+    static const struct cycle_save _cycsave_##func \
+    __attribute__((__used__)) \
+    __attribute__((section("_cycle_save"), unused)) \
+    = {func, flag}
 
 /**
 * @brief 循环储存

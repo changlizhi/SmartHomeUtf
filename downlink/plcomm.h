@@ -11,23 +11,23 @@
 
 //目的配置
 typedef struct {
-	unsigned short metid;  // 从1开始, 0无效
-	unsigned char portcfg;// 1-RS232, 2-以太网
-	unsigned char proto;
+    unsigned short metid;  // 从1开始, 0无效
+    unsigned char portcfg;// 1-RS232, 2-以太网
+    unsigned char proto;
 } plc_dest_t;
 
 
-#define PLCOMM_BUF_LEN		272
+#define PLCOMM_BUF_LEN        272
 unsigned char *GetPlCommBuffer(void);
 
 void MakePlcDest(unsigned short metid, plc_dest_t *dest);
 
-#define PLCHKTIME_POLL		1   //轮询方式较表
-#define PLCHKTIME_BROCAST	2   //广播方式较表
+#define PLCHKTIME_POLL        1   //轮询方式较表
+#define PLCHKTIME_BROCAST    2   //广播方式较表
 
 //返回错误码
-#define PLCERR_INVALID		-1
-#define PLCERR_TIMEOUT		-2
+#define PLCERR_INVALID        -1
+#define PLCERR_TIMEOUT        -2
 
 int PlcRead(const plc_dest_t *dest, unsigned long itemid, unsigned char *buf, int len);
 int PlcCtrlMet(const plc_dest_t *dest, unsigned long itemid,unsigned char *buf,int len);

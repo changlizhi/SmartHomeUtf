@@ -93,20 +93,20 @@ printf("接收响应:\n%s\n",lpbuf);
 }
 int SendMessage(char *uuid,char *pwd,char *mobile,char *content)
 {
-	char url[100]={0};
-	char data[1024] = {0};
-	
-	tuobao_tcpclient client;
-	char *response = NULL;
-	tuobao_tcpclient_create(&client,"api.sms7.cn",80);
-	sprintf(data,"uid=%s&pwd=%s&mobile=%s&content=%s",uuid,pwd,mobile,content);
-	if(http_post(&client,"http://api.sms7.cn/tx/",data,&response)){
+    char url[100]={0};
+    char data[1024] = {0};
+
+    tuobao_tcpclient client;
+    char *response = NULL;
+    tuobao_tcpclient_create(&client,"api.sms7.cn",80);
+    sprintf(data,"uid=%s&pwd=%s&mobile=%s&content=%s",uuid,pwd,mobile,content);
+    if(http_post(&client,"http://api.sms7.cn/tx/",data,&response)){
         printf("send faile!\n");
         return -1;
-    	}
-    	printf("back:\n%d:%s\n",strlen(response),response);
-	int retcode = atoi(response);
-    	free(response);
-	return retcode;
+        }
+        printf("back:\n%d:%s\n",strlen(response),response);
+    int retcode = atoi(response);
+        free(response);
+    return retcode;
 }
 

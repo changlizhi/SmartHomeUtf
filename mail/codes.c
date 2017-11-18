@@ -67,18 +67,18 @@ int to64(FILE *infile, FILE *outfile, long int limit)
         if (ct > 71) {
             putc('\r', outfile);
             putc('\n', outfile);
-	    if (limit) {
-		limit -= ct + 2;
-		if (limit < 73) return 1;
-	    }
-	    written += 73;
+        if (limit) {
+        limit -= ct + 2;
+        if (limit < 73) return 1;
+        }
+        written += 73;
             ct = 0;
         }
     }
     if (ct) {
-	putc('\r', outfile);
-	putc('\n', outfile);
-	ct+=2;
+    putc('\r', outfile);
+    putc('\n', outfile);
+    ct+=2;
     }
     return written + ct;
 }
@@ -111,10 +111,10 @@ char *md5contextTo64(MD5_CTX *context)
 
     p = encodedDigest;
     for (i=0; i < sizeof(digest); i+=3) {
-	*p++ = basis_64[digest[i]>>2];
-	*p++ = basis_64[((digest[i] & 0x3)<<4) | ((digest[i+1] & 0xF0)>>4)];
-	*p++ = basis_64[((digest[i+1] & 0xF)<<2) | ((digest[i+2] & 0xC0)>>6)];
-	*p++ = basis_64[digest[i+2] & 0x3F];
+    *p++ = basis_64[digest[i]>>2];
+    *p++ = basis_64[((digest[i] & 0x3)<<4) | ((digest[i+1] & 0xF0)>>4)];
+    *p++ = basis_64[((digest[i+1] & 0xF)<<2) | ((digest[i+2] & 0xC0)>>6)];
+    *p++ = basis_64[digest[i+2] & 0x3F];
     }
     *p-- = '\0';
     *p-- = '=';
@@ -131,8 +131,8 @@ char *md5digest(FILE *infile, long int *len)
     
     MD5Init(&context);
     while (nbytes = fread(buf, 1, sizeof(buf), infile)) {
-	length += nbytes;
-	MD5Update(&context, buf, nbytes);
+    length += nbytes;
+    MD5Update(&context, buf, nbytes);
     }
     rewind(infile);
     if (len) *len = length;

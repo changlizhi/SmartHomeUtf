@@ -20,11 +20,11 @@ DECLARE_INIT_FUNC(SysCallInit);
 int SysCallInit(void)
 {
 
-	if(SysTimeInit()) return 1;
-	if(SysTimerInit()) return 1;
+    if(SysTimeInit()) return 1;
+    if(SysTimerInit()) return 1;
 
-	SET_INIT_FLAG(SysCallInit);
+    SET_INIT_FLAG(SysCallInit);
 
-	return 0;
+    return 0;
 }
 

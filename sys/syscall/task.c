@@ -16,21 +16,21 @@ static int ThreadNumbers = 0;
 
 int SysCreateTask(void *(*routine)(void *), void *arg)
 {
-	if(ThreadNumbers >= MAX_PTHREAD) return 1;
+    if(ThreadNumbers >= MAX_PTHREAD) return 1;
 
-	pthread_create(&ThreadIds[ThreadNumbers], NULL, routine, arg);
-	ThreadNumbers++;
+    pthread_create(&ThreadIds[ThreadNumbers], NULL, routine, arg);
+    ThreadNumbers++;
 
-	return 0;
+    return 0;
 }
 
 void SysWaitTaskEnd(void)
 {
-	int i;
+    int i;
 
-	for(i=0; i<ThreadNumbers; i++)
-	{
-		pthread_join(ThreadIds[i], NULL);
-	}
+    for(i=0; i<ThreadNumbers; i++)
+    {
+        pthread_join(ThreadIds[i], NULL);
+    }
 }
 

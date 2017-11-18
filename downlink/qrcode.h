@@ -11,8 +11,8 @@
 
 extern void *QrCodeTask(void *arg);
 typedef struct {
-	unsigned short addr;   			//设备地址
-	unsigned char runstate[4];  //状态字
+    unsigned short addr;               //设备地址
+    unsigned char runstate[4];  //状态字
 } ctrlcabinet_t;  //当前库
 extern ctrlcabinet_t  ctrlstate[4];
 

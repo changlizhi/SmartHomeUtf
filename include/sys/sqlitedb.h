@@ -12,13 +12,13 @@
 //创建表库文件
 // param table_name : 表名
 // param pdata: 输入缓存区
-// param pdatalen 	: 缓存区长度
+// param pdatalen     : 缓存区长度
 int ReadFromTable(char * table_name, unsigned char * pdata, unsigned int pdatalen);
 
 //保存表库文件
 // param table_name : 表名
 // param qdata: 输出缓存区
-// param qdatalen 	: 缓存区长度
+// param qdatalen     : 缓存区长度
 int SaveToTable(char * table_name, unsigned char * qdata, unsigned int qdatalen);
 #endif /*_XIN_H*/
 

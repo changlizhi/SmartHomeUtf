@@ -10,11 +10,11 @@
 #define _UART_H
 
 /*by ydl modify 2011-05-05*/
-//#define UART_PORTNUM		5
-#define UART_PORTNUM		2
+//#define UART_PORTNUM        5
+#define UART_PORTNUM        2
 
-#define UART_RS485_0		0
-#define UART_QRCODE			1
+#define UART_RS485_0        0
+#define UART_QRCODE            1
 /*end*/
 
 /**

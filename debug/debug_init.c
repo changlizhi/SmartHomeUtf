@@ -21,21 +21,21 @@ DECLARE_INIT_FUNC(DebugInit);
 int DebugInit(void)
 {
 
-	ShellCmdInit();
+    ShellCmdInit();
 
-	if(EthShellInit()) return 1;
-//	if(PipeShellInit()) return 1;
-		                                       
+    if(EthShellInit()) return 1;
+//    if(PipeShellInit()) return 1;
 
-	if(GetStartArg('b', NULL, 0)) { //前台运行
-		if(!GetStartArg('s', NULL, 0)) { //启动命令行界面
-			TtyShellStart();
-		}
-	}
 
-	LoadDebugStatistics();
+    if(GetStartArg('b', NULL, 0)) { //前台运行
+        if(!GetStartArg('s', NULL, 0)) { //启动命令行界面
+            TtyShellStart();
+        }
+    }
 
-	SET_INIT_FLAG(DebugInit);
-	return 0;
+    LoadDebugStatistics();
+
+    SET_INIT_FLAG(DebugInit);
+    return 0;
 }
 

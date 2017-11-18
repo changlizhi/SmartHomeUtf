@@ -18,24 +18,24 @@ void BcdToHex(unsigned char *str, int len);
 
 static inline int HexIsEmpty(const unsigned char *buf, int len, unsigned char flag)
 {
-	int i;
+    int i;
 
-	for(i=0; i<len; i++) {
-		if(buf[i] != flag) return 0;
-	}
+    for(i=0; i<len; i++) {
+        if(buf[i] != flag) return 0;
+    }
 
-	return 1;
+    return 1;
 }
 
 static inline int HexComp(const unsigned char *buf1, const unsigned char *buf2, int len)
 {
-	int i;
+    int i;
 
-	for(i=0; i<len; i++) {
-		if(buf1[i] != buf2[i]) return 1;
-	}
+    for(i=0; i<len; i++) {
+        if(buf1[i] != buf2[i]) return 1;
+    }
 
-	return 0;
+    return 0;
 }
 
 void print_longstr(char *str);

@@ -16,20 +16,20 @@
 #include "include/debug.h"
 #include "include/sys/uart.h"
 
-static int SpeedArray[] = {	B115200, B57600, B38400, B19200, B9600, 
-							B4800, B2400, B1200, B600, B300, };
-static int NameArray[] = {	115200, 57600, 38400,  19200,  9600,  
-							4800,  2400,  1200,  600, 300, } ;
+static int SpeedArray[] = {    B115200, B57600, B38400, B19200, B9600,
+                            B4800, B2400, B1200, B600, B300, };
+static int NameArray[] = {    115200, 57600, 38400,  19200,  9600,
+                            4800,  2400,  1200,  600, 300, } ;
 /*by ydl modify 2011-05-05*/
 //static int FidUart[UART_PORTNUM] = {-1, -1, -1, -1, -1};
 static int FidUart[UART_PORTNUM] = {-1, -1};
 /*end*/
 
-#define UART_RCVBUF_SIZE		2048
+#define UART_RCVBUF_SIZE        2048
 struct uart_rcvst {
-	unsigned char buf[UART_RCVBUF_SIZE];
-	int len;
-	int head;
+    unsigned char buf[UART_RCVBUF_SIZE];
+    int len;
+    int head;
 };
 static struct uart_rcvst UartRecvBuffer[UART_PORTNUM];
 
@@ -40,27 +40,27 @@ static struct uart_rcvst UartRecvBuffer[UART_PORTNUM];
 */
 int UartOpen(unsigned int port)
 {
-	char dev[16];
-	int fd;
+    char dev[16];
+    int fd;
 
-	AssertLogReturn(port>=UART_PORTNUM, 1, "invalid port(%d)\n", port);
+    AssertLogReturn(port>=UART_PORTNUM, 1, "invalid port(%d)\n", port);
 
-	if(-1 != FidUart[port]) {
-		close(FidUart[port]);
-		FidUart[port] = -1;
-	}
+    if(-1 != FidUart[port]) {
+        close(FidUart[port]);
+        FidUart[port] = -1;
+    }
 
-	sprintf(dev, "/dev/ttyS%d", port);
-	fd = open(dev, O_RDWR|O_NONBLOCK);
-	if(-1 == fd) {
-		PrintLog(0,"can not open uart %d,dev = %s\n", port,dev);
-		return 1;
-	}
+    sprintf(dev, "/dev/ttyS%d", port);
+    fd = open(dev, O_RDWR|O_NONBLOCK);
+    if(-1 == fd) {
+        PrintLog(0,"can not open uart %d,dev = %s\n", port,dev);
+        return 1;
+    }
 
-	FidUart[port] = fd;
-	UartRecvBuffer[port].len = 0;
+    FidUart[port] = fd;
+    UartRecvBuffer[port].len = 0;
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -69,11 +69,11 @@ int UartOpen(unsigned int port)
 */
 void UartClose(unsigned int port)
 {
-	AssertLogReturnVoid(port>=UART_PORTNUM, "invalid port(%d)\n", port);
-	AssertLogReturnVoid(-1 == FidUart[port], "invalid fid(%d)\n", FidUart[port]);
+    AssertLogReturnVoid(port>=UART_PORTNUM, "invalid port(%d)\n", port);
+    AssertLogReturnVoid(-1 == FidUart[port], "invalid fid(%d)\n", FidUart[port]);
 
-	close(FidUart[port]);
-	FidUart[port] = -1;
+    close(FidUart[port]);
+    FidUart[port] = -1;
 }
 
 /**
@@ -83,33 +83,33 @@ void UartClose(unsigned int port)
 */
 void UartSetBaudrate(unsigned int port, int baud)
 {
-	int i; 
-	int status; 
-	struct termios opt;
-	int fd;
+    int i;
+    int status;
+    struct termios opt;
+    int fd;
 
-	AssertLogReturnVoid(port>=UART_PORTNUM, "invalid port(%d)\n", port);
-	fd = FidUart[port];
-	AssertLogReturnVoid(-1 == fd, "invalid fid(%d)\n", fd);
+    AssertLogReturnVoid(port>=UART_PORTNUM, "invalid port(%d)\n", port);
+    fd = FidUart[port];
+    AssertLogReturnVoid(-1 == fd, "invalid fid(%d)\n", fd);
 
-	if(tcgetattr(fd, &opt) != 0) {
-		ErrorLog("tcgetattr fail\n");
-		return;
-	}
+    if(tcgetattr(fd, &opt) != 0) {
+        ErrorLog("tcgetattr fail\n");
+        return;
+    }
 
-	for ( i= 0;  i < sizeof(SpeedArray) / sizeof(int);  i++) { 
-		if  (baud == NameArray[i]) {     
-			tcflush(fd, TCIOFLUSH);     
-			cfsetispeed(&opt, SpeedArray[i]);  
-			cfsetospeed(&opt, SpeedArray[i]);   
-			status = tcsetattr(fd, TCSANOW, &opt);  
-			if  (status != 0) {        
-				ErrorLog("tcsetattr fail\n");
-				return;     
-			}    
-			tcflush(fd,TCIOFLUSH);   
-		}
-	}
+    for ( i= 0;  i < sizeof(SpeedArray) / sizeof(int);  i++) {
+        if  (baud == NameArray[i]) {
+            tcflush(fd, TCIOFLUSH);
+            cfsetispeed(&opt, SpeedArray[i]);
+            cfsetospeed(&opt, SpeedArray[i]);
+            status = tcsetattr(fd, TCSANOW, &opt);
+            if  (status != 0) {
+                ErrorLog("tcsetattr fail\n");
+                return;
+            }
+            tcflush(fd,TCIOFLUSH);
+        }
+    }
 }
 
 /**
@@ -121,71 +121,71 @@ void UartSetBaudrate(unsigned int port, int baud)
 */
 void UartSetParity(unsigned int port, int databits,int stopbits, char parity)
 { 
-	struct termios options; 
-	int fd;
+    struct termios options;
+    int fd;
 
-	AssertLogReturnVoid(port>=UART_PORTNUM, "invalid port(%d)\n", port);
-	fd = FidUart[port];
-	AssertLogReturnVoid(-1 == fd, "invalid fid(%d)\n", fd);
+    AssertLogReturnVoid(port>=UART_PORTNUM, "invalid port(%d)\n", port);
+    fd = FidUart[port];
+    AssertLogReturnVoid(-1 == fd, "invalid fid(%d)\n", fd);
 
-	if(tcgetattr(fd, &options) != 0) {
-		ErrorLog("tcgetattr fail\n");
-		return;
-	}
+    if(tcgetattr(fd, &options) != 0) {
+        ErrorLog("tcgetattr fail\n");
+        return;
+    }
 
-	options.c_iflag = 0;
-	options.c_cflag &= ~CSIZE; 
-	switch (databits) {
-	case 5: options.c_cflag |= CS5; break;
-	case 6: options.c_cflag |= CS6; break;	
-	case 7:	options.c_cflag |= CS7; break;
-	case 8: options.c_cflag |= CS8; break;   
-	default: ErrorLog("invalid databits(%d)\n", databits); return;   
-	}
+    options.c_iflag = 0;
+    options.c_cflag &= ~CSIZE;
+    switch (databits) {
+    case 5: options.c_cflag |= CS5; break;
+    case 6: options.c_cflag |= CS6; break;
+    case 7:    options.c_cflag |= CS7; break;
+    case 8: options.c_cflag |= CS8; break;
+    default: ErrorLog("invalid databits(%d)\n", databits); return;
+    }
 
-	switch (parity) {
-	case 'n':
-	case 'N':    
-		options.c_cflag &= ~PARENB;   /* Clear parity enable */
-		options.c_iflag &= ~INPCK;     /* Enable parity checking */ 
-		break;  
-	case 'o':   
-	case 'O':     
-		options.c_cflag |= (PARODD | PARENB);
-		options.c_iflag |= INPCK;             /* Disnable parity checking */ 
-		break;  
-	case 'e':  
-	case 'E':   
-		options.c_cflag |= PARENB;     /* Enable parity */    
-		options.c_cflag &= ~PARODD;   
-		options.c_iflag |= INPCK;       /* Disnable parity checking */
-		break;
-	case 'S': 
-	case 's':  /*as no parity*/   
-	    options.c_cflag &= ~PARENB;
-		options.c_cflag &= ~CSTOPB;break;  
-	default: ErrorLog("invalid parity(%d)\n", parity); return;
-	}
+    switch (parity) {
+    case 'n':
+    case 'N':
+        options.c_cflag &= ~PARENB;   /* Clear parity enable */
+        options.c_iflag &= ~INPCK;     /* Enable parity checking */
+        break;
+    case 'o':
+    case 'O':
+        options.c_cflag |= (PARODD | PARENB);
+        options.c_iflag |= INPCK;             /* Disnable parity checking */
+        break;
+    case 'e':
+    case 'E':
+        options.c_cflag |= PARENB;     /* Enable parity */
+        options.c_cflag &= ~PARODD;
+        options.c_iflag |= INPCK;       /* Disnable parity checking */
+        break;
+    case 'S':
+    case 's':  /*as no parity*/
+        options.c_cflag &= ~PARENB;
+        options.c_cflag &= ~CSTOPB;break;
+    default: ErrorLog("invalid parity(%d)\n", parity); return;
+    }
 
-	switch (stopbits) {
-	case 1: options.c_cflag &= ~CSTOPB; break;  
-	case 2: options.c_cflag |= CSTOPB; break;
-	default: ErrorLog("invalid stopbits(%d)\n", stopbits); return;
-	}
+    switch (stopbits) {
+    case 1: options.c_cflag &= ~CSTOPB; break;
+    case 2: options.c_cflag |= CSTOPB; break;
+    default: ErrorLog("invalid stopbits(%d)\n", stopbits); return;
+    }
 
-	options.c_iflag  &= ~(INLCR|IGNCR|ICRNL|IUCLC);  //add 2007-10-19
-	options.c_lflag  &= ~(ICANON | ECHO | ECHOE | ISIG);  /*Input*/
-	options.c_oflag  &= ~OPOST;   /*Output*/
+    options.c_iflag  &= ~(INLCR|IGNCR|ICRNL|IUCLC);  //add 2007-10-19
+    options.c_lflag  &= ~(ICANON | ECHO | ECHOE | ISIG);  /*Input*/
+    options.c_oflag  &= ~OPOST;   /*Output*/
 
-	tcflush(fd, TCIFLUSH);
-	options.c_cc[VTIME] = 0; /*15 seconds*/   
-	options.c_cc[VMIN] = 0; /* Update the options and do it NOW */
+    tcflush(fd, TCIFLUSH);
+    options.c_cc[VTIME] = 0; /*15 seconds*/
+    options.c_cc[VMIN] = 0; /* Update the options and do it NOW */
 
-	if(tcsetattr(fd, TCSANOW, &options) != 0) {
-		ErrorLog("tcsetattr fail\n");
-		return;
-	}
-	
+    if(tcsetattr(fd, TCSANOW, &options) != 0) {
+        ErrorLog("tcsetattr fail\n");
+        return;
+    }
+
 }
 
 /**
@@ -198,8 +198,8 @@ void UartSetParity(unsigned int port, int databits,int stopbits, char parity)
 */
 void UartSet(unsigned int port, int baud, int databits, int stopbits, char parity)
 {
-	UartSetBaudrate(port, baud);
-	UartSetParity(port, databits, stopbits, parity);
+    UartSetBaudrate(port, baud);
+    UartSetParity(port, databits, stopbits, parity);
 }
 
 /**
@@ -211,21 +211,21 @@ void UartSet(unsigned int port, int baud, int databits, int stopbits, char parit
 */
 int UartSend(unsigned int port, const unsigned char *buf, int len)
 {
-	int fd;
+    int fd;
 
-	AssertLogReturn(port>=UART_PORTNUM, 1, "invalid port(%d)\n", port);
-	fd = FidUart[port];
-//	if(fd <0)
-//		UartOpen(port);
-	
-	DebugPrint(LOGTYPE_DOWNLINK,"Port = %d,fd=%d\n",port,fd);
-	PrintHexLog(LOGTYPE_DOWNLINK, buf, len);
-	AssertLogReturn(-1 == fd, 1, "invalid fid(%d)\n", fd);
-	AssertLog(len<=0, "invalid len(%d)\n", len);
+    AssertLogReturn(port>=UART_PORTNUM, 1, "invalid port(%d)\n", port);
+    fd = FidUart[port];
+//    if(fd <0)
+//        UartOpen(port);
 
-	write(fd, (char *)buf, len);
+    DebugPrint(LOGTYPE_DOWNLINK,"Port = %d,fd=%d\n",port,fd);
+    PrintHexLog(LOGTYPE_DOWNLINK, buf, len);
+    AssertLogReturn(-1 == fd, 1, "invalid fid(%d)\n", fd);
+    AssertLog(len<=0, "invalid len(%d)\n", len);
 
-	return 0;
+    write(fd, (char *)buf, len);
+
+    return 0;
 }
 
 /**
@@ -238,36 +238,36 @@ aram len 缓存区长度
 */
 int UartRecv(unsigned int port, unsigned char *buf, int len)
 {
-	int fd, rtn, i;
-	unsigned char *precv;
+    int fd, rtn, i;
+    unsigned char *precv;
 
-	AssertLogReturn(port>=UART_PORTNUM, -1, "invalid port(%d)\n", port);
-	fd = FidUart[port];
-	
-	AssertLogReturn(-1 == fd, -1, "invalid fid(%d)\n", fd);
-	AssertLog(len<=0, "invalid len(%d)\n", len);
+    AssertLogReturn(port>=UART_PORTNUM, -1, "invalid port(%d)\n", port);
+    fd = FidUart[port];
 
-	if(UartRecvBuffer[port].len <= 0) {
-		UartRecvBuffer[port].len = 0;
-		UartRecvBuffer[port].head = 0;
-		rtn = read(fd, UartRecvBuffer[port].buf, UART_RCVBUF_SIZE);
-		
-		if((rtn <=0) || (rtn > UART_RCVBUF_SIZE)) return 0;
-		//DebugPrint(0,"接收串口%d 发送来的数据%d:",port,rtn);
-		//PrintHexLog(0, UartRecvBuffer[port].buf, rtn);
-		UartRecvBuffer[port].len = rtn;
-	}
+    AssertLogReturn(-1 == fd, -1, "invalid fid(%d)\n", fd);
+    AssertLog(len<=0, "invalid len(%d)\n", len);
 
-	if(UartRecvBuffer[port].len > len) rtn = len;
-	else rtn = UartRecvBuffer[port].len;
+    if(UartRecvBuffer[port].len <= 0) {
+        UartRecvBuffer[port].len = 0;
+        UartRecvBuffer[port].head = 0;
+        rtn = read(fd, UartRecvBuffer[port].buf, UART_RCVBUF_SIZE);
 
-	precv =  &UartRecvBuffer[port].buf[UartRecvBuffer[port].head];
-	for(i=0; i<rtn; i++) *buf++ = *precv++;
-	//memcpy(buf, &UartRecvBuffer[port].buf[UartRecvBuffer[port].head], rtn);
-	UartRecvBuffer[port].len -= rtn;
-	UartRecvBuffer[port].head += rtn;
+        if((rtn <=0) || (rtn > UART_RCVBUF_SIZE)) return 0;
+        //DebugPrint(0,"接收串口%d 发送来的数据%d:",port,rtn);
+        //PrintHexLog(0, UartRecvBuffer[port].buf, rtn);
+        UartRecvBuffer[port].len = rtn;
+    }
 
-	return rtn;
+    if(UartRecvBuffer[port].len > len) rtn = len;
+    else rtn = UartRecvBuffer[port].len;
+
+    precv =  &UartRecvBuffer[port].buf[UartRecvBuffer[port].head];
+    for(i=0; i<rtn; i++) *buf++ = *precv++;
+    //memcpy(buf, &UartRecvBuffer[port].buf[UartRecvBuffer[port].head], rtn);
+    UartRecvBuffer[port].len -= rtn;
+    UartRecvBuffer[port].head += rtn;
+
+    return rtn;
 }
 
 /**
@@ -277,8 +277,8 @@ int UartRecv(unsigned int port, unsigned char *buf, int len)
 */
 int UartGetFid(unsigned int port)
 {
-	AssertLogReturn(port>=UART_PORTNUM, -1, "invalid port(%d)\n", port);
+    AssertLogReturn(port>=UART_PORTNUM, -1, "invalid port(%d)\n", port);
 
-	return(FidUart[port]);
+    return(FidUart[port]);
 }
 

@@ -18,23 +18,23 @@
 */
 int DiskUsage(const char *diskpath)
 {
-	struct statfs buffer;
-	int rtn;
+    struct statfs buffer;
+    int rtn;
 
-	if(statfs(diskpath, &buffer)) return -1;
+    if(statfs(diskpath, &buffer)) return -1;
 
-	if(buffer.f_blocks <= 0) return -1;
+    if(buffer.f_blocks <= 0) return -1;
 
 
-	rtn = (buffer.f_blocks - buffer.f_bavail)*100/buffer.f_blocks;
-	//rtn = (int)((float)buffer.f_bavail/(float)buffer.f_blocks)*100;
-	return rtn;
+    rtn = (buffer.f_blocks - buffer.f_bavail)*100/buffer.f_blocks;
+    //rtn = (int)((float)buffer.f_bavail/(float)buffer.f_blocks)*100;
+    return rtn;
 }
 
 void setvolume(int volume)
 {
-	char  musicvolume[100] ={0};
-	sprintf(musicvolume,"numid=5,iface=MIXER,name='Headphone Playback Volume' %d",volume);
-	system(musicvolume);
+    char  musicvolume[100] ={0};
+    sprintf(musicvolume,"numid=5,iface=MIXER,name='Headphone Playback Volume' %d",volume);
+    system(musicvolume);
 }
 

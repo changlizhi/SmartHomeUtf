@@ -3,7 +3,7 @@ echo "startup setting..."
 cd /
 
 if [ ! -d data ]; then
-	mkdir data
+    mkdir data
 fi
 
 
@@ -14,18 +14,18 @@ testflag=false
 
 
 if [ ! -d param ]; then
-	mkdir param
+    mkdir param
 fi
 
 
 if [ ! -d bakup ]; then
-	mkdir bakup
+    mkdir bakup
 fi
 
 cd /opt/data/
 
 if [ ! -d cache ]; then
-	mkdir cache
+    mkdir cache
 fi
 
 cd /opt/work
@@ -33,14 +33,14 @@ cd /opt/work
 app_file=smarthome.out
 
 if [ -f $app_file ]; then
-	cp $app_file ${runfile_path}/
-	cd $runfile_path
-	chmod +x $app_file
-	./$app_file
-	cd $srcfile_path
+    cp $app_file ${runfile_path}/
+    cd $runfile_path
+    chmod +x $app_file
+    ./$app_file
+    cd $srcfile_path
 else
-	echo "no " $app_file
-	testflag=true
+    echo "no " $app_file
+    testflag=true
 fi
 cd /
 

@@ -28,8 +28,8 @@
 #include "plcomm.h"
 #include "include/debug/shellcmd.h"
 
-#define PLMDB_MAGIC		0xfedc9708
-#define PLMDB_SAVEPATH		DATA_PATH
+#define PLMDB_MAGIC        0xfedc9708
+#define PLMDB_SAVEPATH        DATA_PATH
 
 extern char HextoInt(char Hex_in);
 static int PlMdbLockId = -1;
@@ -38,18 +38,18 @@ mdbcur_t  MdbCurData[MAX_METER+1];
 
 void LockPlMdb(void)
 {
-	LockSysLock(PlMdbLockId);
+    LockSysLock(PlMdbLockId);
 }
 void UnlockPlMdb(void)
 {
-	UnlockSysLock(PlMdbLockId);
+    UnlockSysLock(PlMdbLockId);
 }
-#define LOCK_PLMDB		LockSysLock(PlMdbLockId)
-#define UNLOCK_PLMDB	UnlockSysLock(PlMdbLockId)
+#define LOCK_PLMDB        LockSysLock(PlMdbLockId)
+#define UNLOCK_PLMDB    UnlockSysLock(PlMdbLockId)
 
 
 static const char *PlFileName[] = {
-	"daypl", "monpl", "dayimp","Lday","Lmon","Limp",
+    "daypl", "monpl", "dayimp","Lday","Lmon","Limp",
 };
 
 ReadMetErr_Alarm ReadMetErrAlarm[MAX_METER];
@@ -62,19 +62,19 @@ ReadMetErr_Alarm ReadMetErrAlarm[MAX_METER];
 DECLARE_INIT_FUNC(ReadMetErrAlarmInit);
 int ReadMetErrAlarmInit(void)
 {
-	if(ReadBinFile(READMETERR_SAVE_PATH "rdmeter.db", READMETERR_MAGIC, (unsigned char *)ReadMetErrAlarm, sizeof(ReadMetErrAlarm)) > 0)
-	{
-		DebugPrint(0, "ReadMetErrAlarmInit init ok\n");
-	}
-	else 
-	{
-		DebugPrint(0, "ReadMetErrAlarmInit init fail\n");
-		memset(&ReadMetErrAlarm, 0, sizeof(ReadMetErrAlarm));
-	}
+    if(ReadBinFile(READMETERR_SAVE_PATH "rdmeter.db", READMETERR_MAGIC, (unsigned char *)ReadMetErrAlarm, sizeof(ReadMetErrAlarm)) > 0)
+    {
+        DebugPrint(0, "ReadMetErrAlarmInit init ok\n");
+    }
+    else
+    {
+        DebugPrint(0, "ReadMetErrAlarmInit init fail\n");
+        memset(&ReadMetErrAlarm, 0, sizeof(ReadMetErrAlarm));
+    }
 
-	SET_INIT_FLAG(ReadMetErrAlarmInit);
+    SET_INIT_FLAG(ReadMetErrAlarmInit);
 
-	return 0;
+    return 0;
 }
 
 
@@ -87,22 +87,22 @@ int ReadMetErrAlarmInit(void)
 */
 static int PlMdbFileName(char *filename, unsigned char dbid, dbtime_t dbtime)
 {
-	AssertLogReturn(dbid > PLMDB_LIMP, 1, "invalid dbid(%d)\n", dbid);
+    AssertLogReturn(dbid > PLMDB_LIMP, 1, "invalid dbid(%d)\n", dbid);
 
-	if('m' == PlFileName[dbid][0]) {
-		sprintf(filename, PLMDB_SAVEPATH "%s@%02d%02d.db",
-						PlFileName[dbid], dbtime.s.year, dbtime.s.month);
-	}
-	else if('L' == PlFileName[dbid][0]){
-		sprintf(filename, PLMDB_SAVEPATH "%s",PlFileName[dbid]);
+    if('m' == PlFileName[dbid][0]) {
+        sprintf(filename, PLMDB_SAVEPATH "%s@%02d%02d.db",
+                        PlFileName[dbid], dbtime.s.year, dbtime.s.month);
+    }
+    else if('L' == PlFileName[dbid][0]){
+        sprintf(filename, PLMDB_SAVEPATH "%s",PlFileName[dbid]);
 
-	}
-	else {
-		sprintf(filename, PLMDB_SAVEPATH "%s@%02d%02d%02d.db",
-						PlFileName[dbid], dbtime.s.year,dbtime.s.month, dbtime.s.day);
-	}
+    }
+    else {
+        sprintf(filename, PLMDB_SAVEPATH "%s@%02d%02d%02d.db",
+                        PlFileName[dbid], dbtime.s.year,dbtime.s.month, dbtime.s.day);
+    }
 
-	return 0;
+    return 0;
 }
 
 
@@ -115,25 +115,25 @@ static int PlMdbFileName(char *filename, unsigned char dbid, dbtime_t dbtime)
 DECLARE_INIT_FUNC(PlMdbInit);
 int PlMdbInit(void)
 {
-	sysclock_t clock;
-	dbtime_t dbtime;
-	int rtn;
-	int i;
-	memset( MdbCurData, PLDATA_EMPTY, sizeof(MdbCurData) );
-	for(i =1;i<255;i++)
-	{
-		MdbCurData[i].addr = i/4+1 ;
-		if(i<240)
-		{
-			int index = i%4;
-			index = (index-1)*2;
-			MdbCurData[i].runstate[index] = i;
-		}
-	}
-	PlMdbLockId = RegisterSysLock();
-	
-	SET_INIT_FLAG(PlMdbInit);
-	return 0;
+    sysclock_t clock;
+    dbtime_t dbtime;
+    int rtn;
+    int i;
+    memset( MdbCurData, PLDATA_EMPTY, sizeof(MdbCurData) );
+    for(i =1;i<255;i++)
+    {
+        MdbCurData[i].addr = i/4+1 ;
+        if(i<240)
+        {
+            int index = i%4;
+            index = (index-1)*2;
+            MdbCurData[i].runstate[index] = i;
+        }
+    }
+    PlMdbLockId = RegisterSysLock();
+
+    SET_INIT_FLAG(PlMdbInit);
+    return 0;
 }
 
 /**
@@ -144,17 +144,17 @@ int PlMdbInit(void)
 */
 static inline unsigned short ClockToReadTime(const sysclock_t *clock, int flag)
 {
-	unsigned short us;
+    unsigned short us;
 
-	us = (unsigned short)clock->hour * 60 + (unsigned short)clock->minute;
-	if(flag) {
-		unsigned short us2 = clock->day;
+    us = (unsigned short)clock->hour * 60 + (unsigned short)clock->minute;
+    if(flag) {
+        unsigned short us2 = clock->day;
 
-		if(us2 == 0 || us2 > 31) us2 = 1;
-		us += (us2-1)*1440;
-	}
+        if(us2 == 0 || us2 > 31) us2 = 1;
+        us += (us2-1)*1440;
+    }
 
-	return us;
+    return us;
 }
 
 /**
@@ -166,20 +166,20 @@ static inline unsigned short ClockToReadTime(const sysclock_t *clock, int flag)
 */
 static inline void ReadTimeToClock(const sysclock_t *fileclock, unsigned short readtime, int flag, sysclock_t *clock)
 {
-	clock->second = 0;
-	clock->minute = readtime%60;
-	readtime /= 60;
-	clock->month = fileclock->month;
-	clock->year = fileclock->year;
+    clock->second = 0;
+    clock->minute = readtime%60;
+    readtime /= 60;
+    clock->month = fileclock->month;
+    clock->year = fileclock->year;
 
-	if(flag) {
-		clock->hour = readtime%24;
-		clock->day = readtime/24 + 1;
-	}
-	else {
-		clock->hour = readtime;
-		clock->day = fileclock->day;
-	}
+    if(flag) {
+        clock->hour = readtime%24;
+        clock->day = readtime/24 + 1;
+    }
+    else {
+        clock->hour = readtime;
+        clock->day = fileclock->day;
+    }
 }
 
 
@@ -191,7 +191,7 @@ static inline void ReadTimeToClock(const sysclock_t *fileclock, unsigned short r
  * 返回0成功
 */
 
-#define DATA_PATH		"/data/"
-#define MDB_MAGIC		0xfedc9708
+#define DATA_PATH        "/data/"
+#define MDB_MAGIC        0xfedc9708
 
 

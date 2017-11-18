@@ -10,7 +10,7 @@
 #define _RS485_H
 
 //RS485 端口数
-#define RS485_PORTNUM	2
+#define RS485_PORTNUM    2
 
 /**
 * @brief 复位RS485端口
@@ -57,22 +57,22 @@ void Rs485Lock(unsigned int port);
 */
 void Rs485Unlock(unsigned int port);
 
-#define RS485_BITMASK   	0x03
-#define RS485_BIT5   		0x00
-#define RS485_BIT6   		0x01
-#define RS485_BIT7   		0x02
-#define RS485_BIT8   		0x03
+#define RS485_BITMASK       0x03
+#define RS485_BIT5           0x00
+#define RS485_BIT6           0x01
+#define RS485_BIT7           0x02
+#define RS485_BIT8           0x03
 
 #define RS485_STOPMASK    0x04
-#define RS485_STOP1    	0x00
-#define RS485_STOP2    	0x04
+#define RS485_STOP1        0x00
+#define RS485_STOP2        0x04
 
 #define RS485_PARITYMASK    0x38
-#define RS485_NOPARITY   	0x00
-#define RS485_ODDPARITY    	0x08
+#define RS485_NOPARITY       0x00
+#define RS485_ODDPARITY        0x08
 #define RS485_EVENPARITY    0x18
-#define RS485_1PARITY    	0x30
-#define RS485_0PARITY    	0x38
+#define RS485_1PARITY        0x30
+#define RS485_0PARITY        0x38
 
 #define MAXNUM_RS485    4
 #endif /*_RS485_H*/

@@ -29,17 +29,17 @@ static int ParamSaveSysLock = -1;
 DECLARE_INIT_FUNC(ParamSaveInit);
 int ParamSaveInit(void)
 {
-	PrintLog(0,"  param save init..\n");
+    PrintLog(0,"  param save init..\n");
 
-	ParamSaveSysLock = RegisterSysLock();
-	if(ParamSaveSysLock < 0) {
-		ErrorLog("register syslock fail\n");
-		return 1;
-	}
-	
-	SET_INIT_FLAG(ParamSaveInit);
+    ParamSaveSysLock = RegisterSysLock();
+    if(ParamSaveSysLock < 0) {
+        ErrorLog("register syslock fail\n");
+        return 1;
+    }
 
-	return 0;
+    SET_INIT_FLAG(ParamSaveInit);
+
+    return 0;
 }
 
 static unsigned int SaveFlag = 0;
@@ -49,7 +49,7 @@ static unsigned int SaveFlag = 0;
 */
 void ClearSaveParamFlag(void)
 {
-	SaveFlag = 0;
+    SaveFlag = 0;
 }
 
 /**
@@ -58,13 +58,13 @@ void ClearSaveParamFlag(void)
 */
 void SetSaveParamFlag(unsigned int flag)
 {
-	SaveFlag |= flag;
+    SaveFlag |= flag;
 }
 
 
 typedef int (*savefunc_t)(void);
 static const savefunc_t FunctionSave[FILEINDEX_MAX] = {
-	SaveParaTerm, SaveParaUni, SaveParaSceneUse,SaveParaTimerTask,
+    SaveParaTerm, SaveParaUni, SaveParaSceneUse,SaveParaTimerTask,
 };
 
 /**
@@ -72,23 +72,23 @@ static const savefunc_t FunctionSave[FILEINDEX_MAX] = {
 */
 void SaveParam(void)
 {
-	int index;
-	unsigned int mask;
+    int index;
+    unsigned int mask;
 
-	LockSysLock(ParamSaveSysLock);
+    LockSysLock(ParamSaveSysLock);
 
-	for(index=0,mask=1; index<FILEINDEX_MAX; index++,mask<<=1) 
-	{
-		if(mask&SaveFlag) 
-		{	
-			DebugPrint(0, "save index:%d\n", index);
-			(*FunctionSave[index])();
-		}
-	}
+    for(index=0,mask=1; index<FILEINDEX_MAX; index++,mask<<=1)
+    {
+        if(mask&SaveFlag)
+        {
+            DebugPrint(0, "save index:%d\n", index);
+            (*FunctionSave[index])();
+        }
+    }
 
-	UnlockSysLock(ParamSaveSysLock);
+    UnlockSysLock(ParamSaveSysLock);
 
-	SaveFlag = 0;
+    SaveFlag = 0;
 }
 
 

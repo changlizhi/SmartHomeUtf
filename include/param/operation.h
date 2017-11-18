@@ -9,9 +9,9 @@
 #ifndef _PARAM_OPERATION_H
 #define _PARAM_OPERATION_H
 
-#define POERR_OK			0
-#define POERR_INVALID		1
-#define POERR_FATAL		2
+#define POERR_OK            0
+#define POERR_INVALID        1
+#define POERR_FATAL        2
 
 void ClearSaveParamFlag(void);
 void SetSaveParamFlag(unsigned int flag);

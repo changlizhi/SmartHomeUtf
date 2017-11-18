@@ -16,31 +16,31 @@
 */
 int Sfloat02ToPower(const unsigned char *psrc)
 {
-	int rtn, i, base;
-	unsigned char uc;
+    int rtn, i, base;
+    unsigned char uc;
 
-	rtn = (int)(psrc[1]&0x0f);
-	rtn *= 100;
-	uc = (psrc[0]&0xf0)>>4;
-	uc *= 10;
-	uc += psrc[0]&0x0f;
-	rtn += (int)uc&0xff;
+    rtn = (int)(psrc[1]&0x0f);
+    rtn *= 100;
+    uc = (psrc[0]&0xf0)>>4;
+    uc *= 10;
+    uc += psrc[0]&0x0f;
+    rtn += (int)uc&0xff;
 
-	uc = (psrc[1]&0xe0)>>5;
-	uc = (~uc)&0x07;
+    uc = (psrc[1]&0xe0)>>5;
+    uc = (~uc)&0x07;
 
-	base = (int)uc;
-	base--;
-	if(base < 0) {
-		rtn /= 10;
-	}
-	else {
-		for(i=0; i<base; i++) rtn *= 10;
-	}
+    base = (int)uc;
+    base--;
+    if(base < 0) {
+        rtn /= 10;
+    }
+    else {
+        for(i=0; i<base; i++) rtn *= 10;
+    }
 
-	if(psrc[1]&0x10) rtn *= -1;
+    if(psrc[1]&0x10) rtn *= -1;
 
-	return(rtn);
+    return(rtn);
 }
 
 /**
@@ -50,51 +50,51 @@ int Sfloat02ToPower(const unsigned char *psrc)
 */
 void PowerToSfloat02(int src, unsigned char *pdst)
 {
-	int i;
-	unsigned char flag, uc;
+    int i;
+    unsigned char flag, uc;
 
-	if(src < 0) {
-		src *= -1;
-		flag = 1;
-	}
-	else flag = 0;
+    if(src < 0) {
+        src *= -1;
+        flag = 1;
+    }
+    else flag = 0;
 
-	//为了科陆的破参数一致性检查...	
-	if((src < 99900) && (0 == (src%100))) {
-		src /= 100;
+    //为了科陆的破参数一致性检查...
+    if((src < 99900) && (0 == (src%100))) {
+        src /= 100;
 
-		uc = 0x80;
-		if(flag) uc |= 0x10;
-		uc += (unsigned char)(src/100);
-		pdst[1] = uc;
+        uc = 0x80;
+        if(flag) uc |= 0x10;
+        uc += (unsigned char)(src/100);
+        pdst[1] = uc;
 
-		src %= 100;
-		uc = (unsigned char)(src/10)<<4;
-		uc += (unsigned char)(src%10);
-		pdst[0] = uc;
+        src %= 100;
+        uc = (unsigned char)(src/10)<<4;
+        uc += (unsigned char)(src%10);
+        pdst[0] = uc;
 
-		return;
-	}
+        return;
+    }
 
-	for(i=1; i<7; i++) {
-		if(src < 1000) break;
-		src /= 10;
-	}
-	if(src >= 1000) src = 999;
+    for(i=1; i<7; i++) {
+        if(src < 1000) break;
+        src /= 10;
+    }
+    if(src >= 1000) src = 999;
 
-	uc = i;
-	uc = (~uc)&0x07;
-	uc = (uc<<5)&0xe0;
-	if(flag) uc |= 0x10;
+    uc = i;
+    uc = (~uc)&0x07;
+    uc = (uc<<5)&0xe0;
+    if(flag) uc |= 0x10;
 
-	uc += (unsigned char)(src/100);
-	pdst[1] = uc;
+    uc += (unsigned char)(src/100);
+    pdst[1] = uc;
 
-	src %= 100;
+    src %= 100;
 
-	uc = (unsigned char)(src/10)<<4;
-	uc += (unsigned char)(src%10);
-	pdst[0] = uc;
+    uc = (unsigned char)(src/10)<<4;
+    uc += (unsigned char)(src%10);
+    pdst[0] = uc;
 }
 
 /**
@@ -104,19 +104,19 @@ void PowerToSfloat02(int src, unsigned char *pdst)
 */
 int Sbcd03ToEnergy(const unsigned char *psrc)
 {
-	int tmp;
+    int tmp;
 
-	tmp = (int)psrc[3] & 0x0f;
-	tmp *= 1000000;
-	tmp += BcdToUnsigned(psrc, 3);
+    tmp = (int)psrc[3] & 0x0f;
+    tmp *= 1000000;
+    tmp += BcdToUnsigned(psrc, 3);
 
-	if(psrc[3]&0x40) {
-		if(tmp > MAX_GENE_MWH) tmp = MAX_GENE_MWH;
-		tmp *= 1000;
-	}
-	if(psrc[3]&0x10) tmp *= -1;
+    if(psrc[3]&0x40) {
+        if(tmp > MAX_GENE_MWH) tmp = MAX_GENE_MWH;
+        tmp *= 1000;
+    }
+    if(psrc[3]&0x10) tmp *= -1;
 
-	return(tmp);
+    return(tmp);
 }
 
 /**
@@ -126,22 +126,22 @@ int Sbcd03ToEnergy(const unsigned char *psrc)
 */
 void EnergyToSbcd03(int src, unsigned char *pdst)
 {
-	unsigned char flag;
+    unsigned char flag;
 
-	if(src < 0) {
-		flag = 0x10;
-		src *= -1;
-	}
-	else flag = 0;
+    if(src < 0) {
+        flag = 0x10;
+        src *= -1;
+    }
+    else flag = 0;
 
-	if(src > 9999999) {
-		src /= 1000;
-		flag |= 0x40;
-		if(src > 9999999) src = 9999999;
-	}
+    if(src > 9999999) {
+        src /= 1000;
+        flag |= 0x40;
+        if(src > 9999999) src = 9999999;
+    }
 
-	UnsignedToBcd(src, pdst, 4);
-	pdst[3] &= 0x0f;
-	pdst[3] |= flag;
+    UnsignedToBcd(src, pdst, 4);
+    pdst[3] &= 0x0f;
+    pdst[3] |= flag;
 }
 
