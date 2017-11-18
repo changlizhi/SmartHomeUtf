@@ -104,6 +104,9 @@ static int PlayVoice(const char * filename,int type)
 			sprintf(cmd,"aplay /tmp/mounts/SD-P1/voice/musicefileInvalid.wav  &");
 			system(cmd);
 			Sleep(1);
+			sprintf(cmd,"aplay /tmp/mounts/SD-P1/voice/ceshiyinpin1.wav  &");
+			system(cmd);
+			Sleep(1);
 			//切换音频播放开关
 			gpio_set_value(GPIO_39,1);
 			gpio_set_value(GPIO_42,1);
@@ -126,6 +129,9 @@ static int PlayVoice(const char * filename,int type)
 			sprintf(cmd,"aplay /tmp/mounts/SD-P1/voice/musicefileInvalid.wav  &");
 			system(cmd);
 			Sleep(1);
+            sprintf(cmd,"aplay /tmp/mounts/SD-P1/voice/ceshiyinpin2.wav  &");
+            system(cmd);
+            Sleep(1);
 			gpio_set_value(GPIO_39,1);
 			gpio_set_value(GPIO_42,1);
 			return -1;
