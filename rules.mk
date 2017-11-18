@@ -2,15 +2,15 @@
 
 #USE_PC=1
 ifneq ($(CROSS_COMPILE),)
-    CC=$(CROSS_COMPILE)-gcc
-    CXX=$(CROSS_COMPILE)-g++
-    AR=$(CROSS_COMPILE)-ar
-    LD=$(CROSS_COMPILE)-ld
+	CC=$(CROSS_COMPILE)-gcc
+	CXX=$(CROSS_COMPILE)-g++
+	AR=$(CROSS_COMPILE)-ar
+	LD=$(CROSS_COMPILE)-ld
 else
-    CC  = mipsel-openwrt-linux-gcc
-    CXX = mipsel-openwrt-linux-g++
-    AR  = mipsel-openwrt-linux-ar
-    LD  = mipsel-openwrt-linux-ld
+	CC  = mipsel-openwrt-linux-gcc
+	CXX = mipsel-openwrt-linux-g++
+	AR  = mipsel-openwrt-linux-ar
+	LD  = mipsel-openwrt-linux-ld
 endif
 
 
