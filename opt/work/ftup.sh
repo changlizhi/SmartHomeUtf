@@ -1,5 +1,6 @@
 #!/bin/ash
 
+echo "install.sh /tmp/ftup4/depack"
 echo "start install ........"
 rm -rf /tmp/ftup*
 system_config=/etc/config/system
