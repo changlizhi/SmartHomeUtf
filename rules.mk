@@ -27,6 +27,6 @@ IGNORE=$(wildcard .*.c.dep)
 -include $(IGNORE)
 
 %.o: %.c
-    @echo "  CC  " $< "-o" $@; \
-    $(CC) $(CFLAGS) $(DFLAGS) -c $< -o $@ -Wp,-MMD,$(dir $<).$(notdir $<).dep
+	@echo "  CC  " $< "-o" $@; \
+	$(CC) $(CFLAGS) $(DFLAGS) -c $< -o $@ -Wp,-MMD,$(dir $<).$(notdir $<).dep
 
