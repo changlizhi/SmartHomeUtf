@@ -389,7 +389,8 @@ static void *PlayTask_Pressdown(void *arg)
 						{
 							
 							PlayVoice("startplay.wav",0);
-							
+							PlayVoice("ceshikaishibofang.wav",0);
+
 							Sleep(300);
 							
 							playstate = PlayVoice("shock.mp3",1);
