@@ -20,34 +20,34 @@ all: information $(SUBMAKE) $(MAINOUT)
 
 .PHONY: information
 information:
-    @echo "compiler = "$(CC)
+	@echo "compiler = "$(CC)
 
 $(MAINOUT): $(OBJS) $(LOCALLIBS)
-    @echo "  make  "$@"..."
-    @utils/mkdate ./mkdate.c
-    @$(CC) $(CFLAGS) $(DFLAGS) -c mkdate.c -o mkdate.o
-    @$(CC) $(OBJS) $(LOCALLIBS) mkdate.o $(LINKFLAG) $(SHARELIBS) -o $@
-    @rm -f mkdate.c mkdate.o
-    @echo "  make  "$@" ok"
-    @utils/xzip z 3699 $(MAINOUT) $(XZIPOUT)
+	@echo "  make  "$@"..."
+	@utils/mkdate ./mkdate.c
+	@$(CC) $(CFLAGS) $(DFLAGS) -c mkdate.c -o mkdate.o
+	@$(CC) $(OBJS) $(LOCALLIBS) mkdate.o $(LINKFLAG) $(SHARELIBS) -o $@
+	@rm -f mkdate.c mkdate.o
+	@echo "  make  "$@" ok"
+	@utils/xzip z 3699 $(MAINOUT) $(XZIPOUT)
 
 .PHONY: $(SUBMAKE)
 $(SUBMAKE):
-#    @echo $(MAKE) "-C" $(dir $@)
-    @$(MAKE) -s -C $(dir $@)
+#	@echo $(MAKE) "-C" $(dir $@)
+	@$(MAKE) -s -C $(dir $@)
 
 .PHONY: $(LOCALLIBS_CLEAN)
 $(LOCALLIBS_CLEAN):
-    @echo $(MAKE) "-C" $@ "clean"
-    @$(MAKE) -s -C $@ clean
+	@echo $(MAKE) "-C" $@ "clean"
+	@$(MAKE) -s -C $@ clean
 
 .PHONY: clean
 clean: $(LOCALLIBS_CLEAN)
-    @rm -f $(MAINOUT) $(XZIPOUT) $(OBJS) $(DEPS) *.o .*.c.dep
-    @echo remove objs ok
+	@rm -f $(MAINOUT) $(XZIPOUT) $(OBJS) $(DEPS) *.o .*.c.dep
+	@echo remove objs ok
 
 .PHONY: relclean
 relclean: $(LOCALLIBS_CLEAN)
-    @rm -f $(OBJS) $(DEPS) *.o .*.c.dep
-    @echo remove objs ok
+	@rm -f $(OBJS) $(DEPS) *.o .*.c.dep
+	@echo remove objs ok
 
