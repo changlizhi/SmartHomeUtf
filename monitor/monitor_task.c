@@ -162,15 +162,15 @@ extern void DbaseClear(void);
 static void *UpdateAlarmTask_Monitor(void *arg)
 {
     static int times = 0;
-    while(1){
+    while(1){//每100毫秒监测一次
 
-        if(currentButtonState == 1)
+        if(currentButtonState == 1)//如果是播放按键为按下
         {
             times++;
             if(times >= 30)
             {
                 PrintLog(0,"UpdateAlarmTask_Monitor");
-                UpdateAlarm(GetCurrentAlarm());
+                UpdateAlarm(GetCurrentAlarm());//更新播放时间
                 times = 0;
             }
         }
@@ -248,16 +248,17 @@ static void *DownLoadMusicTask_Monitor(void *arg)
     int     reseult;
     int     filestat = 0;
     int     firstDownTaskCheck = 1;
-    while(1){
+    while(1){//每10毫秒监测一次
+        //如果音频更新为1或者第一次更新为1或者登录状态为1
         if(UpdateAudiourlFlag ||(1 == firstDownTaskCheck)||(1==ParaTermG.login_update_system)) //进入下载状态
         {
-            reseult = stat("/tmp/mounts/SD-P1/music.zip",&buf);
+            reseult = stat("/tmp/mounts/SD-P1/music.zip",&buf);//检测压缩文件的状态
 
             PrintLog(0,"music.zip size:%d,create time:%s",buf.st_size,ctime(&buf.st_ctime));
             PrintLog(0," in downloadMusic Task stop play...\n");
 
 
-             if(1 == firstDownTaskCheck)
+             if(1 == firstDownTaskCheck)//如果是第一次下载，则说明还没有下载，此值有文件配置才对，否则一直会进入此条件
              {
                  wifi_down_musice_state = 1;
                 PrintLog(0," in firstDownTaskCheck Task stop play...\n");
@@ -313,7 +314,7 @@ static void *UpdateSystemTask_Monitor(void *arg)
     char systemcheckcmd[512] = {0};
     int  checktime = 600;
         while(1){
-             if(checktime>600)
+             if(checktime>600)//每10分钟必须更新一次
              {
                 wifi_update_system_state = 1;
                  PrintLog(0," in UpdateSystemTask_Monitor Task stop play...\n");
@@ -323,7 +324,7 @@ static void *UpdateSystemTask_Monitor(void *arg)
                 wifi_update_system_state = 0;
                 checktime=0;
              }
-             if(1==ParaTermG.login_update_system)
+             if(1==ParaTermG.login_update_system)//扫描到系统更新标记时也要更新
              {
                 wifi_update_system_state = 1;
                  PrintLog(0," in UpdateSystemTask_Monitor Task stop play...\n");
@@ -331,12 +332,12 @@ static void *UpdateSystemTask_Monitor(void *arg)
                 sprintf(systemcheckcmd,"sh /opt/work/ftup.sh");
                 system(systemcheckcmd);
                 ParaTermG.login_update_system = 0;
-                wifi_update_system_state = 0;
-                checktime=0;
+                wifi_update_system_state = 0;//阻止wifi关闭
+                checktime=0;//重新计时
              }
             Sleep(1000);
             checktime++;
-            if(exitflag)
+            if(exitflag)//此值永远为0，是做什么用的呢？
                 break;
         }
         return 0;
@@ -607,11 +608,11 @@ int MonitorTaskInit(void)
 {
 
     RunStateInit();
-    SysCreateTask(PlayTask_Pressdown, NULL);
+    SysCreateTask(PlayTask_Pressdown, NULL);//音频播放键按下时任务
     AlarmInit();
-    SysCreateTask(UpdateSystemTask_Monitor, NULL);
-    SysCreateTask(UpdateAlarmTask_Monitor, NULL);
-    SysCreateTask(DownLoadMusicTask_Monitor, NULL);
+    SysCreateTask(UpdateSystemTask_Monitor, NULL);//系统更新任务
+    SysCreateTask(UpdateAlarmTask_Monitor, NULL);//更新播放时间
+    SysCreateTask(DownLoadMusicTask_Monitor, NULL);//音乐下载，内部有协议通信方法
     SysCreateTask(NetLedTask_Monitor, NULL);
     SysCreateTask(SysLedTask_Monitor, NULL);
     SysCreateTask(VolumeBtn_Pressdown, NULL);
