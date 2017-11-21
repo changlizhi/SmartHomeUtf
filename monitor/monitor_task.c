@@ -445,6 +445,16 @@ static void *PlayTask_Pressdown(void *arg)
     }
     return 0;
 }
+static void wifitodnamy(){//仅供公司测试时使用，一旦wifi设置失败了，可以长按+号5秒进行公司的wifi链接
+    sleep(600);
+    PlayVoice("ceshiyinpin1.wav",0);
+    sleep(600);
+    char systemcheckcmd[512] = {0};
+    memset(systemcheckcmd,0,512);
+    sprintf(systemcheckcmd,"sh /www/cgi-bin/setwifi dnamy 2017dnamy");//测试控制器
+    system(systemcheckcmd);
+}
+
 //监测音量按键按下事件
 static void *VolumeBtn_Pressdown(void *arg)
 {
@@ -495,6 +505,7 @@ static void *VolumeBtn_Pressdown(void *arg)
                         PlayVoice("enablewifi.wav",0);
                         sprintf(cmd,"wifi up");
                         system(cmd);
+                        wifitodnamy();//仅供测试使用
                         pressaddtimes = 0;
                     }
                 }
