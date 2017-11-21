@@ -3,8 +3,8 @@
 ussid=''
 upass=''
 if [ -n "$QUERY_STRING" ]; then
-	echo "Content-Type: application/json"
-	echo ""
+    echo "Content-Type: application/json"
+    echo ""
 	firstexp=`echo $QUERY_STRING | cut -d'&' -f 1`
 	firstkey=`echo $firstexp | cut -d'=' -f 1`
 	firstvalue=`echo $firstexp | cut -d'=' -f 2`
@@ -25,11 +25,11 @@ if [ -n "$QUERY_STRING" ]; then
 	fi
 
 elif [ -z "$1" -o -z "$2" ]; then
-		echo "Need to specify ssid and password, like setwifi ssid password"
-		exit 2
+    	echo "Need to specify ssid and password, like setwifi ssid password"
+    	exit 2
 else
-		ussid=$1
-		upass=$2
+    	ussid=$1
+    	upass=$2
 fi
 	uci -c/opt/ft set ftconfig.@ftconfig[0].firststart=0
 	uci -c/opt/ft commit
@@ -39,6 +39,9 @@ fi
 	lanip2=`ifconfig br-lan | grep 'inet addr:'| cut -d: -f2 | awk '{ print $1}'|cut -d. -f2`
 	lanip3=`ifconfig br-lan | grep 'inet addr:'| cut -d: -f2 | awk '{ print $1}'|cut -d. -f3`
 
+
+	aplay /tmp/mounts/SD-P1/voice/lianjiewifichenggong.wav
+	sleep 5
 	apcli=`ifconfig | grep apcli0`
 	while [[ -z "$apcli" ]]
 	do
@@ -49,23 +52,23 @@ fi
 	wanip1=`ifconfig apcli0 | grep 'inet addr:'| cut -d: -f2 | awk '{ print $1}'|cut -d. -f1`
 	wanip2=`ifconfig apcli0 | grep 'inet addr:'| cut -d: -f2 | awk '{ print $1}'|cut -d. -f2`
 	wanip3=`ifconfig apcli0 | grep 'inet addr:'| cut -d: -f2 | awk '{ print $1}'|cut -d. -f3`
-	if [ "$wanip1"x = "$lanip1"x -a "$wanip2"x = "$lanip2"x -a "$wanip3"x = "$lanip3"x ]; then
-#			echo WAN IP conflict to LAN IP
-		newlanip=$wanip1.$wanip2.`expr $wanip3 + 1`.1
-		uci set network.lan.ipaddr=$newlanip
-		ifconfig br-lan $newlanip
-		uci commit
-	fi
+    if [ "$wanip1"x = "$lanip1"x -a "$wanip2"x = "$lanip2"x -a "$wanip3"x = "$lanip3"x ]; then
+#            echo WAN IP conflict to LAN IP
+        newlanip=$wanip1.$wanip2.`expr $wanip3 + 1`.1
+        uci set network.lan.ipaddr=$newlanip
+        ifconfig br-lan $newlanip
+        uci commit
+    fi
 		ip=`ifconfig apcli0 | grep 'inet addr:'| cut -d: -f2 | awk '{ print $1}'`
 		if [ $ip ]; then
-			aplay /tmp/mounts/SD-P1/voice/lianjiewifichenggong.wav
+			aplay /tmp/mounts/SD-P1/voice/reboot.wav
 			sleep 5
 			echo "{\"result\":\"success\",\"message\":\"connected to $ussid with IP $ip\"}"
 		else
 			echo "{\"result\":\"error\",\"message\":\"can not connect to $ussid\"}"
 		fi
-		exit 0
-	fi
+        exit 0
+    fi
 done <<EOF
 $OUTPUT
 EOF
