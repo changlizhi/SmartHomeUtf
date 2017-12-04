@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible'
+              content='IE=edge'>
+        <meta name='viewport'
+              content='width=device-width, initial-scale=1'>
+        <meta name='description'
+              content=''>
+        <meta name='author'
+              content=''>
+        <link rel='shortcut icon'
+              href='assets/ico/favicon.ico'>
+
+        <script type='text/javascript'
+                src='js/jquery.min.js'></script>
+        <script type='text/javascript'
+                src='js/bootstrap.min.js'></script>
+        <script type='text/javascript'
+                src='js/docs.min.js'></script>
+        <script type='text/javascript'
+                src='js/bootstrap-select.min.js'></script>
+        <title>设置控制器联网</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href='css/bootstrap.min.css'
+              rel='stylesheet'>
+        <link rel='stylesheet'
+              type='text/css'
+              href='css/bootstrap-select.min.css'>
+        <link type='text/css'
+              href='css/style.css'
+              rel='stylesheet'>
+
+        <script type='text/javascript'>
+          $(window).on('load', function () {
+            $.ajax({
+              type: "GET",
+              url: "/cgi-bin/aps",
+              dataType: "json",
+              contentType: "application/json; charset=utf-8",
+              success: function (json) {
+                $('.selectpicker').empty();
+                for (var key in json) {
+                  var cur_ap = json[key]
+                  var chanel = cur_ap.chanel
+                  $('.selectpicker').append("<option value=" + key + ">" + key + "</option>");
+                }
+                $('.selectpicker').selectpicker();
+              },
+              error: function (error) {
+                //alert("调用出错" + error.responseText);
+              }
+            });
+          });
+        </script>
+        <script type='text/javascript'>
+          function setwifi () {
+            $.ajax({
+              type: 'GET',
+              url: '/cgi-bin/setwifi?ssid=' + $('#ssid').val() + '&password=' + $('#password').val(),
+              dataType: 'json',
+              contentType: 'application/json; charset=utf-8',
+              success: function (json) {
+                if (json.result == 'error') {
+                  $('#alertMsg').innerHTML = '<div class="alert alert-danger">' + json.message + '</div>'
+                }
+              },
+              error: function (error) {
+                //alert('调用出错' + error.responseText);
+              }
+            });
+            document.getElementById('alertMsg').innerHTML = '<div class="alert alert-info">正在连接AP，请等待大约30秒后刷新本页面查看状态...</div>'
+            return false;
+          }
+        </script>
+    </head>
+    <body>
+        <div class='container-fluid'>
+            <div class='row'>
+                <div class='col-xs-12 col-sm-12  col-md-12  main'>
+                    <div id='alertMsg'></div>
+                    <form action='#'
+                          method='post'
+                          onsubmit='return setwifi();'
+                          class='well'>
+                        <fieldset>
+                            <legend>设置控制器联网</legend>
+                            <div class='form-group'>
+                                <label for='ssid'>家庭WIFI名称</label>
+                                <select id='ssid'
+                                        name='ssid'
+                                        class='selectpicker form-control'
+                                        data-live-search='true'>
+                                    <option value='checking'>正在查询可用的WIFI接入点，请稍后...</option>
+                                </select>
+                            </div>
+                            <div class='form-group'>
+                                <label for='password'>家庭WIFI密码</label>
+                                <input id='password'
+                                       type='password'
+                                       name='password'
+                                       class='form-control' />
+                            </div>
+
+                            <div style='margin: 20px 0;'>
+                                <button type='submit'
+                                        class='btn btn-primary'>连接
+                                </button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+            <hr>
+        </div>
+    </body>
+</html>

@@ -240,7 +240,7 @@ static void LoadDefParaTerm(void)
     ParaTermG.deviceid[5] = 4;
     ParaTermG.deviceid[6] = 0xD7;
     ParaTermG.first_start = 1;
-    ParaTermG.Musicmonth = 4;
+    ParaTermG.Musicmonth = 7;
     ParaTermG.login_update_system = 0;
     ParaTermG.login_down_musice = 0;
 
