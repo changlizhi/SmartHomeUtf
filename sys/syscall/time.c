@@ -519,7 +519,7 @@ int getFileDays()
     MaxDays = ParaTermG.Musicmonth*2592000;
     PrintLog(0,"getFileDays second: %d\n",second);
     if(second>MaxDays)
-        return 1;
+        return 0;//给北京客户的设备不做失效处理
     else
         return 0;
 
