@@ -109,7 +109,7 @@ int AlarmProc(unsigned char itf)
     {
         //判断系统是当前未更新，而且未下载音频文件，刚将WIFI关闭，减少发热
         if(wifi_update_system_state == 0 && wifi_down_musice_state == 0)
-          system("wifi down");
+         // system("wifi down");
     }
     return 0;
 }
