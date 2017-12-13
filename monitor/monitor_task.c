@@ -358,15 +358,14 @@ static void *PlayTask_Pressdown(void *arg)
 
     currentButtonState  = 0;
     PrintLog(0,"ParaTermG.first_start %d...\n",ParaTermG.first_start);
-    PlayVoice("qidongceshiyinpin.wav",0);
     if(ParaTermG.first_start)
     {
-        PlayVoice("welcome.wav",0);
+        PlayVoice("qidongceshiyinpin.wav",0);
 
     }
     else
     {
-        PlayVoice("welcome1.wav",0);
+        PlayVoice("qidongceshiyinpin.wav",0);
     }
     system("sh /opt/work/unzipmusic.sh");
 
