@@ -291,7 +291,7 @@ static void *DownLoadMusicTask_Monitor(void *arg)
                 sprintf(downloadcmd,"sh /opt/work/musicdownload.sh %s",audiourl);
                 system(downloadcmd);
                 PlayVoice("enddownload.wav",0);
-               // system("wifi down");
+                system("wifi up");
                 PrintLog(0,"downloadMusic Task Finshed...\n");
 
                 wifi_down_musice_state = 0;
@@ -397,7 +397,7 @@ static void *PlayTask_Pressdown(void *arg)
                                 MakeAlarmG(GetCurrentAlarm());
                                 currentButtonState = 1;
                                 PrintLog(0,"play button press to start play...\n");
-                                //system("wifi down");
+                                system("wifi up");
                                 SvrCommLineState = LINESTAT_OFF;
                             }
 
@@ -524,7 +524,7 @@ static void *VolumeBtn_Pressdown(void *arg)
                     sprintf(cmd,"uci -c/opt/ft set ftconfig.@ftconfig[0].firststart=1");
                     system(cmd);
                     sprintf(cmd,"uci -c/opt/ft commit");
-                    //sprintf(cmd,"wifi down");
+                    sprintf(cmd,"wifi up");
                     system(cmd);
                     sprintf(cmd,"wifi up");
                     system(cmd);
@@ -555,7 +555,7 @@ static void *VolumeBtn_Pressdown(void *arg)
                     {
 
                     PlayVoice("disablewifi.wav",0);
-                   // sprintf(cmd,"wifi down");
+                    sprintf(cmd,"wifi up");
                         system(cmd);
                         presssubtimes = 0;
                     }
@@ -578,7 +578,7 @@ static void *VolumeBtn_Pressdown(void *arg)
                     system(cmd);
                     sprintf(cmd,"uci -c/opt/ft commit");
 
-                    //sprintf(cmd,"wifi down");
+                    sprintf(cmd,"wifi up");
                     system(cmd);
                     sprintf(cmd,"wifi up");
                     system(cmd);

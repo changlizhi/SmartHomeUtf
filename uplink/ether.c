@@ -105,7 +105,7 @@ static int EtherConnect(void)
     CountFail++;
 
     if(CountFail == 2) {
-        //system("wifi down");
+        system("wifi up");
     }
 
     return 1;
