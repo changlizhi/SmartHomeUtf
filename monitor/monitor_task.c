@@ -41,6 +41,11 @@
 #include "downlink/plmdb.h"
 #include "include/uplink/svrnote.h"
 #include "../uplink/svrcomm.h"
+#include "include/monitor/alarm.h"
+#include "downlink/plcomm.h"
+
+
+
 
 
 #define IPSTR "10.0.0.104"
@@ -168,8 +173,13 @@ char cilent_main(char buf[BUFSIZE])
 
 
 
-#include "include/monitor/alarm.h"
-#include "downlink/plcomm.h"
+
+
+
+
+
+
+
 //static int TimerIdPowerOff = -1;
 #define USB_DISK   "/dev/sda1"
 #define TMP_UDISK    TEMP_PATH"udisk.tmp" //监时文件
