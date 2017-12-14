@@ -103,9 +103,6 @@ static int PlayVoice(const char * filename,int type)
             //音频文件失效，播放提示音
             sprintf(cmd,"aplay /tmp/mounts/SD-P1/voice/musicefileInvalid.wav  &");
             system(cmd);
-            Sleep(300);
-            sprintf(cmd,"aplay /tmp/mounts/SD-P1/voice/ceshiyinpin1.wav  &");
-            system(cmd);
             Sleep(1);
             //切换音频播放开关
             gpio_set_value(GPIO_39,1);
@@ -127,9 +124,6 @@ static int PlayVoice(const char * filename,int type)
         {
             //无音频文件，播放提示音
             sprintf(cmd,"aplay /tmp/mounts/SD-P1/voice/musicefileInvalid.wav  &");
-            system(cmd);
-            Sleep(300);
-            sprintf(cmd,"aplay /tmp/mounts/SD-P1/voice/ceshiyinpin2.wav  &");
             system(cmd);
             Sleep(1);
             gpio_set_value(GPIO_39,1);
@@ -360,12 +354,12 @@ static void *PlayTask_Pressdown(void *arg)
     PrintLog(0,"ParaTermG.first_start %d...\n",ParaTermG.first_start);
     if(ParaTermG.first_start)
     {
-        PlayVoice("qidongceshiyinpin.wav",0);
+        PlayVoice("welcome.wav",0);
 
     }
     else
     {
-        PlayVoice("qidongceshiyinpin.wav",0);
+        PlayVoice("welcome1.wav",0);
     }
     system("sh /opt/work/unzipmusic.sh");
 
@@ -445,8 +439,6 @@ static void *PlayTask_Pressdown(void *arg)
     return 0;
 }
 static void wifitodnamy(){//仅供公司测试时使用，一旦wifi设置失败了，可以长按+号5秒进行公司的wifi链接
-    sleep(600);
-    PlayVoice("ceshiyinpin1.wav",0);
     sleep(600);
     char systemcheckcmd[512] = {0};
     memset(systemcheckcmd,0,512);
