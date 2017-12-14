@@ -85,210 +85,210 @@ const static int S_Box[8][4][16] = {
 7, 11,  4,  1,  9, 12, 14,  2,  0,  6, 10, 13, 15,  3,  5,  8,
 2,  1, 14,  7,  4, 10,  8, 13, 15, 12,  9,  0,  3,  5,  6, 11
 };
-void cpysss(int *output, int *tmp, int length)
+void cpy(int *output, int *tmp, int length)
 {
-    int j0 = 0;
-    for (j0 = 0; j0<length; j0++)
-    {
-    output[j0] = tmp[j0];
-    }
+	int j0 = 0;
+	for (j0 = 0; j0<length; j0++)
+	{
+		output[j0] = tmp[j0];
+	}
 }
-void Permutesss(int *output, int *input, int length, const int* table)
+void Permute(int *output, int *input, int length, const int* table)
 {
-    int i1;
-    int *tmp =(int *)malloc(sizeof(length));
-    for (i1= 0; i1<length; ++i1)
-    tmp[i1] = input[table[i1] - 1];
-    cpysss(output, tmp, length);
+	int i1;
+	int *tmp =(int *)malloc(sizeof(length));
+	for (i1= 0; i1<length; ++i1)
+	tmp[i1] = input[table[i1] - 1];
+	cpy(output, tmp, length);
 }
-void Xorsss(int* output, int *input_a, const int *input_b, int length) 
+void Xor(int* output, int *input_a, const int *input_b, int length)
 {
-    int i3,j;
-    for (i3 = 0; i3<length; i3++)
-    output[i3] = input_a[i3] ^ input_b[i3];
-}
-
-
-void Fsss(int right[32], int subkey[48])
-{
-    int r[48];
-    Permutesss(r, right, 48, E_Table);
-
-
-    Xorsss(r1, r, subkey, 48);
-
-    int i2,j,k,h;
-    int p;
-    for (i2 = 0, j, k, h = 0; i2<8; i2++, h += 6)
-    {
-    j = (r1[h] * 2) + r1[h + 5];
-    k = (r1[h + 1] * 8) + (r1[h + 2] * 4) + (r1[h + 3] * 2) + r1[h + 4];
-    int x = S_Box[i2][j][k];
-    for (p = 3; p>-1; p--)
-    {
-        right[i2 * 4 + p] = x % 2;
-        x = x / 2;
-    }
-    }
-    Permutesss(right, right, 32, P_Table);
-}
-void producekeysss(int *permute_key)
-{
-    int i,j,m;
-    for (i = 0; i<16; i++)
-    {
-    int t = LOOP_Table[i];
-    int g[56];
-    for (j = 0; j<56; j++)
-    {
-    g[j] = permute_key[j];
-    }
-    for (j = 0; j<28; j++)
-    {
-    permute_key[j] = g[(t + j) % 28];
-    }
-    for (j = 28; j<56; j++)
-    {
-    permute_key[j] = g[(t + j) % 28 + 28];
-    }
-    for (m = 0; m<48; m++)
-    {
-    SubKey[i][m] = permute_key[PC2_Table[m] - 1];
-    }
-    }
-}
-void ByteToBitsss(int *output, char *input, int bits)
-{
-    int i;
-    for (i = 0; i<bits; i++)
-    {
-    output[i] = (input[i / 8] >> (7 - (i % 8))) & 1;
-    }
+	int i3,j;
+	for (i3 = 0; i3<length; i3++)
+	output[i3] = input_a[i3] ^ input_b[i3];
 }
 
 
-void BitToBytesss(char * output, int * input, int bits)
+void F(int right[32], int subkey[48])
 {
-    int i;
-    for (i = 0; i<8; i++)
-    {
-    output[i] = input[i * 8] * bits * 2 + input[1 + i * 8] * bits + input[2 + i * 8] * (bits / 2) + input[3 + i * 8] * (bits / 4) + input[4 + i * 8] * (bits / 8) +
-    input[5 + i * 8] * (bits / 16) + input[6 + i * 8] * (bits / 32) + input[7 + i * 8] * (bits / 64);
-    }
+	int r[48];
+	Permute(r, right, 48, E_Table);
+
+
+	Xor(r1, r, subkey, 48);
+
+	int i2,j,k,h;
+	int p;
+	for (i2 = 0, j, k, h = 0; i2<8; i2++, h += 6)
+	{
+		j = (r1[h] * 2) + r1[h + 5];
+		k = (r1[h + 1] * 8) + (r1[h + 2] * 4) + (r1[h + 3] * 2) + r1[h + 4];
+		int x = S_Box[i2][j][k];
+		for (p = 3; p>-1; p--)
+		{
+			right[i2 * 4 + p] = x % 2;
+			x = x / 2;
+		}
+	}
+		Permute(right, right, 32, P_Table);
+}
+void producekey(int *permute_key)
+{
+	int i,j,m;
+	for (i = 0; i<16; i++)
+	{
+		int t = LOOP_Table[i];
+		int g[56];
+	for (j = 0; j<56; j++)
+	{
+		g[j] = permute_key[j];
+	}
+	for (j = 0; j<28; j++)
+	{
+		permute_key[j] = g[(t + j) % 28];
+	}
+	for (j = 28; j<56; j++)
+	{
+		permute_key[j] = g[(t + j) % 28 + 28];
+	}
+	for (m = 0; m<48; m++)
+	{
+		SubKey[i][m] = permute_key[PC2_Table[m] - 1];
+	}
+	}
+}
+void ByteToBit(int *output, char *input, int bits)
+{
+	int i;
+	for (i = 0; i<bits; i++)
+	{
+		output[i] = (input[i / 8] >> (7 - (i % 8))) & 1;
+	}
 }
 
 
-int Encryptsss(int M[64], int C[64])
+void BitToByte(char * output, int * input, int bits)
 {
-    int left[32], right[32], tmp[32];
-    int i,i0;
-
-    Permutesss(M, M, 64, IP_Table);
-    for (i = 0; i<32; i++)
-    {
-    left[i] = M[i];
-    }
-    for (i = 0; i<32; i++)
-    {
-    right[i] = M[i + 32];
-    }
-
-
-    for (i0 = 0; i0<16; ++i0)
-    {
-    cpysss(tmp, right, 32);
-    Fsss(right, SubKey[i0]);
-    Xorsss(right, right, left, 32);
-    cpysss(left, tmp, 32);
-    }    
-    cpysss(tmp, right, 32);
-    cpysss(right, left, 32);    // 32位互换
-    cpysss(left, tmp, 32);
-    for (i = 0; i<32; i++)
-    {
-        M[i] = left[i];
-        M[i + 32] = right[i];
-    }
-
-
-    Permutesss(C, M, 64, IPR_Table);       //逆初始置换
-
-
-    return 0;
+	int i;
+	for (i = 0; i<8; i++)
+	{
+	output[i] = input[i * 8] * bits * 2 + input[1 + i * 8] * bits + input[2 + i * 8] * (bits / 2) + input[3 + i * 8] * (bits / 4) + input[4 + i * 8] * (bits / 8) +
+	input[5 + i * 8] * (bits / 16) + input[6 + i * 8] * (bits / 32) + input[7 + i * 8] * (bits / 64);
+	}
 }
-int Decryptsss(int C[64], int M[64]) 
+
+
+int Encrypt(int M[64], int C[64])
 {
-    int left[32], right[32], tmp[32];
-    int i,i0;
+	int left[32], right[32], tmp[32];
+	int i,i0;
 
-    Permutesss(C, C, 64, IP_Table);
-
-    for (i = 0; i<32; i++)
-    {
-        left[i] = C[i];
-    }
-    for (i = 0; i<32; i++)
-    {
-    right[i] = C[i + 32];
-    }
-    for (i0 = 15; i0>-1; i0--)
-    {
-        cpysss(tmp, right, 32);
-        Fsss(right, SubKey[i0]);
-        Xorsss(right, right, left, 32);
-        cpysss(left, tmp, 32);
-    }
-        cpysss(tmp, right, 32);
-        cpysss(right, left, 32);    // 32位互换
-        cpysss(left, tmp, 32);
-        for (i = 0; i<32; i++)
-        {
-        C[i] = left[i];
-        C[i + 32] = right[i];
-        }
-        Permutesss(M, C, 64, IPR_Table);       //逆初始置换
+	Permute(M, M, 64, IP_Table);
+	for (i = 0; i<32; i++)
+	{
+		left[i] = M[i];
+	}
+	for (i = 0; i<32; i++)
+	{
+		right[i] = M[i + 32];
+	}
 
 
-        return 0;
+	for (i0 = 0; i0<16; ++i0)
+	{
+		cpy(tmp, right, 32);
+		F(right, SubKey[i0]);
+		Xor(right, right, left, 32);
+		cpy(left, tmp, 32);
+	}
+		cpy(tmp, right, 32);
+		cpy(right, left, 32);                    // 32位互换
+		cpy(left, tmp, 32);
+		for (i = 0; i<32; i++)
+		{
+			M[i] = left[i];
+			M[i + 32] = right[i];
+		}
+
+
+		Permute(C, M, 64, IPR_Table);               //逆初始置换
+
+
+		return 0;
 }
-int DES_mainsss(char miwen[8]) 
+int Decrypt(int C[64], int M[64])
 {
-    char miyao[9] = "american";
-    int key0[64], key[56];
-    ByteToBitsss(key0, miyao, 64);
-    Permutesss(key, key0, 56, PC1_Table);
-    producekeysss(key);
-    //char miwen[8];
-    int i;
-    unsigned char mingwen[90] = "abcdefgh";
-    int m[64], c[64];
-    ByteToBitsss(m, mingwen, 64);
-    printf("明文二进制输出\n");
-    /*for (i = 0; i<64; i++)
-    {
-        printf("%d",m[i]);
-    }*/
-        Encryptsss(m, c);
-        /*printf("密文二进制输出\n");
-    for (i = 0; i<64; i++)
-    {
-        printf("%d",c[i]);
+		int left[32], right[32], tmp[32];
+		int i,i0;
+
+		Permute(C, C, 64, IP_Table);
+
+		for (i = 0; i<32; i++)
+		{
+			left[i] = C[i];
+		}
+		for (i = 0; i<32; i++)
+		{
+		right[i] = C[i + 32];
+		}
+		for (i0 = 15; i0>-1; i0--)
+		{
+			cpy(tmp, right, 32);
+			F(right, SubKey[i0]);
+			Xor(right, right, left, 32);
+			cpy(left, tmp, 32);
+		}
+			cpy(tmp, right, 32);
+			cpy(right, left, 32);                    // 32位互换
+			cpy(left, tmp, 32);
+			for (i = 0; i<32; i++)
+			{
+				C[i] = left[i];
+				C[i + 32] = right[i];
+			}
+			Permute(M, C, 64, IPR_Table);               //逆初始置换
+
+
+			return 0;
+}
+int DES_main(char miwen[8])
+{
+		char miyao[9] = "american";
+		int key0[64], key[56];
+		ByteToBit(key0, miyao, 64);
+		Permute(key, key0, 56, PC1_Table);
+		producekey(key);
+		//char miwen[8];
+		int i;
+		unsigned char mingwen[90] = "abcdefgh";
+		int m[64], c[64];
+		ByteToBit(m, mingwen, 64);
+		printf("明文二进制输出\n");
+		/*for (i = 0; i<64; i++)
+		{
+			printf("%d",m[i]);
+		}*/
+			Encrypt(m, c);
+			/*printf("密文二进制输出\n");
+		for (i = 0; i<64; i++)
+		{
+			printf("%d",c[i]);
 }*/
-        printf("*****hello miwen*********\n");
-        BitToBytesss(miwen, c, 64);
-        printf("密文输出\n");
-        printf("*****%s\n",miwen);
-        Decryptsss(c, m);
-        BitToBytesss(mingwen, m, 64);
-        printf("明文输出\n");
-        printf("%s\n",mingwen);
-        //return 0;
+			printf("*****hello miwen*********\n");
+			BitToByte(miwen, c, 64);
+			printf("密文输出\n");
+			printf("*****%s\n",miwen);
+			Decrypt(c, m);
+			BitToByte(mingwen, m, 64);
+			printf("明文输出\n");
+			printf("%s\n",mingwen);
+			//return 0;
 
 }
 int main()
 {
-    printf("*****hello main*********\n");
-    char miwen[8];
-    DES_mainsss(miwen);
-    printf("%s\n",miwen);
+		printf("*****hello main*********\n");
+		char miwen[8];
+		DES_main(miwen);
+		printf("%s\n",miwen);
 }
