@@ -182,6 +182,7 @@ void BitToCh(char* dest, char* src, int length) {
 
 // 批置换，以offset为偏移，以count为长度
 void BatchSet(char* dest, char* src, char* offset, int count) {
+  //fffff
     int i;
     for (i = 0; i < count; i++)
         dest[i + 1] = src[offset[i]];
