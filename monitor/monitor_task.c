@@ -702,11 +702,15 @@ static void *PlayTask_Pressdown(void *arg)
     if(ParaTermG.first_start)
     {
         PlayVoice("welcome.wav",0);
+        Sleep(6000)
+        PlayVoice("11111.wav",0);
 
     }
     else
     {
         PlayVoice("welcome1.wav",0);
+        Sleep(6000)
+        PlayVoice("11111.wav",0);
     }
     system("sh /opt/work/unzipmusic.sh");
 
