@@ -9,13 +9,14 @@
 #include <netdb.h>  
 #include <string.h>  
   
-#include "client.h"
-  
-#define BUFFER_SIZE 1024  
+#define BUFFER_SIZE 1024
 #define HTTP_POST "POST /%s HTTP/1.1\r\nHOST: %s:%d\r\nAccept: */*\r\n"\  
     "Content-Type:application/x-www-form-urlencoded\r\nContent-Length: %d\r\n\r\n%s"  
 #define HTTP_GET "GET /%s HTTP/1.1\r\nHOST: %s:%d\r\nAccept: */*\r\n\r\n"  
-  
+
+
+char * http_get(const char *url);
+char * http_post(const char *url,const char * post_str);
   
 static int http_tcpclient_create(const char *host, int port){  
     struct hostent *he;  
