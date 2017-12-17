@@ -25,6 +25,15 @@ int main(int argc,char *argv[])
     int retsize = cilent_main(retbuf);
     printf("**retsize***%d\n",retsize);
     printf("retbuf-------%s\n",retbuf);
+
+    char delims[] = "\n";
+    char *result = NULL;
+    result = strtok(retbuf, delims );
+    while( result != NULL ) {
+        printf( "result is \"%s\"\n", result );
+        result = strtok( NULL, delims );
+    }
+
     return 0;
 }
 int cilent_main(char buf[])
