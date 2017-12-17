@@ -18,15 +18,16 @@
  
 //int main(int argc, char **argv)
 //char cilent_main();
-char cilent_main(char buf[BUFSIZE]);
-int main()
+int cilent_main(char buf[BUFSIZE]);
+int main(int argc,char *argv[])
 {
-    char ret[BUFSIZE];
-    char buf[BUFSIZE];
-    ret = cilent_main(buf);
-    printf("**ret***%s\n",ret);
+    char retbuf[BUFSIZE];
+    int retsize = cilent_main(retbuf);
+    printf("**retsize***%d\n",retsize);
+    printf("retbuf-------%s\n",retbuf);
+    return 0;
 }
-char cilent_main(char buf[BUFSIZE])
+int cilent_main(char buf[])
 {
     int sockfd, ret, i, h;
     struct sockaddr_in servaddr;
@@ -39,13 +40,10 @@ char cilent_main(char buf[BUFSIZE])
     int t = 0;
     int j = 0;
     struct timeval  tv;
-     
-       
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
         printf("创建网络连接失败,本线程即将终止---socket error!\n");
         exit(0);
     }
- 
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(PORT);
@@ -53,7 +51,6 @@ char cilent_main(char buf[BUFSIZE])
         printf("创建网络连接失败,本线程即将终止--inet_pton error!\n");
         exit(0);
     };
- 
     if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0){
         printf("连接到服务器失败,connect error!\n");
         exit(0);
@@ -64,12 +61,11 @@ char cilent_main(char buf[BUFSIZE])
     str=(char *)malloc(128);
     len = strlen(str2);
     sprintf(str, "%d", len);
- 
-    memset(str1, 0, 4096);
+    memset(str1, 0, 1024);
     strcat(str1, "GET /mhsy_web/huoqulianjie?sn=1234 HTTP/1.1\n");
-    strcat(str1, "Host:192.168.0.102\n");
+    strcat(str1, "Host:192.168.0.102 \n");
  //       strcat(str1, "Host:IPSTR\n");
-    strcat(str1, "Content-Type: text/html\n");
+    strcat(str1, "Content-Type: text/plain\n");
     strcat(str1, "Content-Length: ");
     strcat(str1, str);
     strcat(str1, "\n\n");
@@ -88,55 +84,31 @@ char cilent_main(char buf[BUFSIZE])
         printf("消息发送成功，共发送了%d个字节！\n\n", ret);
     }
     printf("****************\n");
-     printf("*****************%s\n",str1);
+    printf("*****************%s\n",str1);
     FD_ZERO(&t_set1);
     FD_SET(sockfd, &t_set1);
  
-    while(1){
-        sleep(2);
-        tv.tv_sec= 0;
-        tv.tv_usec= 0;
-        h= 0;
-        printf("--------------->1\n");
-        h= select(sockfd +1, &t_set1, NULL, NULL, &tv);
-        printf("--------------->2\n");
- 
-        
-        if (h < 0) {
+    sleep(2);
+    tv.tv_sec= 0;
+    tv.tv_usec= 0;
+    h= 0;
+    printf("--------------->1\n");
+    h= select(sockfd +1, &t_set1, NULL, NULL, &tv);
+    printf("--------------->2\n");
+    if (h < 0) {
+        close(sockfd);
+        printf("在读取数据报文时SELECT检测到异常，该异常导致线程终止！\n");
+        return -1;
+    }
+    if (h > 0){
+        memset(buf, 0, 1024);
+        i= read(sockfd, buf,1024 );
+        if (i<0){
             close(sockfd);
-            printf("在读取数据报文时SELECT检测到异常，该异常导致线程终止！\n");
+            printf("读取数据报文时发现远端关闭，该线程终止！\n");
             return -1;
         }
- 
-        if (h > 0){
-            memset(buf, 0, 1024);
-            i= read(sockfd, buf,1024 );
-            if (i<0){
-                close(sockfd);
-                printf("读取数据报文时发现远端关闭，该线程终止！\n");
-                return -1;
-            }
-        }
-        
-            printf("********1********\n"); 
-            printf("%s\n", buf);
-            return buf;
-            /*printf("*********1*******\n");
-
-            char *c = strtok(buf,"\n");
-            while(c)
-            {
-                ps[t++] = c;
-                c = strtok(NULL,"\n");
-                
-            }
-            for(j =0 ;j<t;j++)
-            {
-                printf("%s\n",ps[j]);
-              }*/
     }
     close(sockfd);
- 
- 
-//    return 0;
+    return ret;
 }
