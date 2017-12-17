@@ -12,8 +12,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
  
-#define IPSTR "10.0.0.104" 
-#define PORT 8989
+#define IPSTR "192.168.0.102"
+#define PORT 8089
 #define BUFSIZE 1024
  
 //int main(int argc, char **argv)
@@ -67,7 +67,7 @@ char cilent_main(char buf[BUFSIZE])
  
     memset(str1, 0, 4096);
     strcat(str1, "GET /mhsy_web/huoqulianjie?sn=1234 HTTP/1.1\n");
-    strcat(str1, "Host:10.0.0.118\n");
+    strcat(str1, "Host:192.168.0.102\n");
  //       strcat(str1, "Host:IPSTR\n");
     strcat(str1, "Content-Type: text/html\n");
     strcat(str1, "Content-Length: ");
@@ -121,22 +121,6 @@ char cilent_main(char buf[BUFSIZE])
             printf("********1********\n"); 
             printf("%s\n", buf);
             return buf;
-            /*printf("*********1*******\n");
-
-            char *c = strtok(buf,"\n");
-            while(c)
-            {
-                ps[t++] = c;
-                c = strtok(NULL,"\n");
-                
-            }
-            for(j =0 ;j<t;j++)
-            {
-                printf("%s\n",ps[j]);
-              }*/
     }
     close(sockfd);
- 
- 
-//    return 0;
 }
