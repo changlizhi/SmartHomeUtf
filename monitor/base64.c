@@ -124,8 +124,8 @@ void ceshijiema(){
     const unsigned char *golangurl = "http://pinlv.amchis.com/mhsy_web/leixing/yinpin1.mp3.tar.gz" ;
     char dedata[1024];
     base64_decode(destdata, (unsigned char*)dedata);
-    printf("jiema----：%s", dedata);
-    printf("golangurl：%s", golangurl);
+    printf("jiema----：%s\n", dedata);
+    printf("golangurl：%s\n", golangurl);
 
 }
 
