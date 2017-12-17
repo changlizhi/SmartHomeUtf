@@ -1,232 +1,142 @@
-/*File : http.c 
- *Auth : sjin 
- *Date : 20141206 
- *Mail : 413977243@qq.com 
- */  
-#include <stdio.h>  
-#include <stdlib.h>  
-#include <arpa/inet.h>  
-#include <netdb.h>  
-#include <string.h>  
-  
-#define BUFFER_SIZE 1024
-#define HTTP_POST "POST /%s HTTP/1.1\r\nHOST: %s:%d\r\nAccept: */*\r\n"\  
-    "Content-Type:application/x-www-form-urlencoded\r\nContent-Length: %d\r\n\r\n%s"  
-#define HTTP_GET "GET /%s HTTP/1.1\r\nHOST: %s:%d\r\nAccept: */*\r\n\r\n"  
-
-
-char * http_get(const char *url);
-char * http_post(const char *url,const char * post_str);
-  
-static int http_tcpclient_create(const char *host, int port){  
-    struct hostent *he;  
-    struct sockaddr_in server_addr;   
-    int socket_fd;  
-  
-    if((he = gethostbyname(host))==NULL){  
-        return -1;  
-    }  
-  
-   server_addr.sin_family = AF_INET;  
-   server_addr.sin_port = htons(port);  
-   server_addr.sin_addr = *((struct in_addr *)he->h_addr);  
-  
-    if((socket_fd = socket(AF_INET,SOCK_STREAM,0))==-1){  
-        return -1;  
-    }  
-  
-    if(connect(socket_fd, (struct sockaddr *)&server_addr,sizeof(struct sockaddr)) == -1){  
-        return -1;  
-    }  
-  
-    return socket_fd;  
-}  
-  
-static void http_tcpclient_close(int socket){  
-    close(socket);  
-}  
-  
-static int http_parse_url(const char *url,char *host,char *file,int *port)  
-{  
-    char *ptr1,*ptr2;  
-    int len = 0;  
-    if(!url || !host || !file || !port){  
-        return -1;  
-    }  
-  
-    ptr1 = (char *)url;  
-  
-    if(!strncmp(ptr1,"http://",strlen("http://"))){  
-        ptr1 += strlen("http://");  
-    }else{  
-        return -1;  
-    }  
-  
-    ptr2 = strchr(ptr1,'/');  
-    if(ptr2){  
-        len = strlen(ptr1) - strlen(ptr2);  
-        memcpy(host,ptr1,len);  
-        host[len] = '\0';  
-        if(*(ptr2 + 1)){  
-            memcpy(file,ptr2 + 1,strlen(ptr2) - 1 );  
-            file[strlen(ptr2) - 1] = '\0';  
-        }  
-    }else{  
-        memcpy(host,ptr1,strlen(ptr1));  
-        host[strlen(ptr1)] = '\0';  
-    }  
-    //get host and ip  
-    ptr1 = strchr(host,':');  
-    if(ptr1){  
-        *ptr1++ = '\0';  
-        *port = atoi(ptr1);  
-    }else{  
-        *port = MY_HTTP_DEFAULT_PORT;  
-    }  
-  
-    return 0;  
-}  
-  
-  
-static int http_tcpclient_recv(int socket,char *lpbuff){  
-    int recvnum = 0;  
-  
-    recvnum = recv(socket, lpbuff,BUFFER_SIZE*4,0);  
-  
-    return recvnum;  
-}  
-  
-static int http_tcpclient_send(int socket,char *buff,int size){  
-    int sent=0,tmpres=0;  
-  
-    while(sent < size){  
-        tmpres = send(socket,buff+sent,size-sent,0);  
-        if(tmpres == -1){  
-            return -1;  
-        }  
-        sent += tmpres;  
-    }  
-    return sent;  
-}  
-  
-static char *http_parse_result(const char*lpbuf)  
-{  
-    char *ptmp = NULL;   
-    char *response = NULL;  
-    ptmp = (char*)strstr(lpbuf,"HTTP/1.1");  
-    if(!ptmp){  
-        printf("http/1.1 not faind\n");  
-        return NULL;  
-    }  
-    if(atoi(ptmp + 9)!=200){  
-        printf("result:\n%s\n",lpbuf);  
-        return NULL;  
-    }  
-  
-    ptmp = (char*)strstr(lpbuf,"\r\n\r\n");  
-    if(!ptmp){  
-        printf("ptmp is NULL\n");  
-        return NULL;  
-    }  
-    response = (char *)malloc(strlen(ptmp)+1);  
-    if(!response){  
-        printf("malloc failed \n");  
-        return NULL;  
-    }  
-    strcpy(response,ptmp+4);  
-    return response;  
-}  
-  
-char * http_post(const char *url,const char *post_str){  
-  
-    char post[BUFFER_SIZE] = {'\0'};  
-    int socket_fd = -1;  
-    char lpbuf[BUFFER_SIZE*4] = {'\0'};  
-    char *ptmp;  
-    char host_addr[BUFFER_SIZE] = {'\0'};  
-    char file[BUFFER_SIZE] = {'\0'};  
-    int port = 0;  
-    int len=0;  
-    char *response = NULL;  
-  
-    if(!url || !post_str){  
-        printf("      failed!\n");  
-        return NULL;  
-    }  
-  
-    if(http_parse_url(url,host_addr,file,&port)){  
-        printf("http_parse_url failed!\n");  
-        return NULL;  
-    }  
-    //printf("host_addr : %s\tfile:%s\t,%d\n",host_addr,file,port);  
-  
-    socket_fd = http_tcpclient_create(host_addr,port);  
-    if(socket_fd < 0){  
-        printf("http_tcpclient_create failed\n");  
-        return NULL;  
-    }  
+#include <stdio.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <time.h>
+#include <errno.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/time.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+ 
+#define IPSTR "192.168.0.102"
+#define PORT 8089
+#define BUFSIZE 1024
+ 
+//int main(int argc, char **argv)
+//char cilent_main();
+char cilent_main(char buf[BUFSIZE]);
+int main()
+{
+    char ret[BUFSIZE];
+    char buf[BUFSIZE];
+    ret = cilent_main(buf);
+    printf("**ret***%s\n",ret);
+}
+char cilent_main(char buf[BUFSIZE])
+{
+    int sockfd, ret, i, h;
+    struct sockaddr_in servaddr;
+    //char str1[4096], str2[4096], buf[BUFSIZE], *str;
+    char str1[4096], str2[4096], *str;
+    socklen_t len;
+    fd_set   t_set1;
+    char *toke;
+    char *ps[1024];
+    int t = 0;
+    int j = 0;
+    struct timeval  tv;
+     
        
-    sprintf(lpbuf,HTTP_POST,file,host_addr,port,strlen(post_str),post_str);  
-  
-    if(http_tcpclient_send(socket_fd,lpbuf,strlen(lpbuf)) < 0){  
-        printf("http_tcpclient_send failed..\n");  
-        return NULL;  
-    }  
-    //printf("发送请求:\n%s\n",lpbuf);  
-  
-    /*it's time to recv from server*/  
-    if(http_tcpclient_recv(socket_fd,lpbuf) <= 0){  
-        printf("http_tcpclient_recv failed\n");  
-        return NULL;  
-    }  
-  
-    http_tcpclient_close(socket_fd);  
-  
-    return http_parse_result(lpbuf);  
-}  
-  
-char * http_get(const char *url)  
-{  
-  
-    char post[BUFFER_SIZE] = {'\0'};  
-    int socket_fd = -1;  
-    char lpbuf[BUFFER_SIZE*4] = {'\0'};  
-    char *ptmp;  
-    char host_addr[BUFFER_SIZE] = {'\0'};  
-    char file[BUFFER_SIZE] = {'\0'};  
-    int port = 0;  
-    int len=0;  
-  
-    if(!url){  
-        printf("      failed!\n");  
-        return NULL;  
-    }  
-  
-    if(http_parse_url(url,host_addr,file,&port)){  
-        printf("http_parse_url failed!\n");  
-        return NULL;  
-    }  
-    //printf("host_addr : %s\tfile:%s\t,%d\n",host_addr,file,port);  
-  
-    socket_fd =  http_tcpclient_create(host_addr,port);  
-    if(socket_fd < 0){  
-        printf("http_tcpclient_create failed\n");  
-        return NULL;  
-    }  
-  
-    sprintf(lpbuf,HTTP_GET,file,host_addr,port);  
-  
-    if(http_tcpclient_send(socket_fd,lpbuf,strlen(lpbuf)) < 0){  
-        printf("http_tcpclient_send failed..\n");  
-        return NULL;  
-    }  
-    printf("发送请求:\n%s\n",lpbuf);
-  
-    if(http_tcpclient_recv(socket_fd,lpbuf) <= 0){  
-        printf("http_tcpclient_recv failed\n");  
-        return NULL;  
-    }  
-    http_tcpclient_close(socket_fd);  
-  
-    return http_parse_result(lpbuf);  
-}  
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
+        printf("创建网络连接失败,本线程即将终止---socket error!\n");
+        exit(0);
+    }
+ 
+    bzero(&servaddr, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_port = htons(PORT);
+    if (inet_pton(AF_INET, IPSTR, &servaddr.sin_addr) <= 0 ){
+        printf("创建网络连接失败,本线程即将终止--inet_pton error!\n");
+        exit(0);
+    };
+ 
+    if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0){
+        printf("连接到服务器失败,connect error!\n");
+        exit(0);
+    }
+    printf("与远端建立了连接\n");
+    memset(str2, 0, 4096);
+    strcat(str2, "theDataToPost");
+    str=(char *)malloc(128);
+    len = strlen(str2);
+    sprintf(str, "%d", len);
+ 
+    memset(str1, 0, 4096);
+    strcat(str1, "GET /mhsy_web/huoqulianjie?sn=1234 HTTP/1.1\n");
+    strcat(str1, "Host:192.168.0.102\n");
+ //       strcat(str1, "Host:IPSTR\n");
+    strcat(str1, "Content-Type: text/html\n");
+    strcat(str1, "Content-Length: ");
+    strcat(str1, str);
+    strcat(str1, "\n\n");
+    printf("%s\n",str);
+ 
+    strcat(str1, str2);
+    strcat(str1, "\r\n\r\n");
+    printf("%s\n",str1);
+ 
+    printf("****************\n");
+    ret = write(sockfd,str1,strlen(str1));
+    if (ret < 0) {
+        printf("发送失败！错误代码是%d，错误信息是'%s'\n",errno, strerror(errno));
+        exit(0);
+    }else{
+        printf("消息发送成功，共发送了%d个字节！\n\n", ret);
+    }
+    printf("****************\n");
+     printf("*****************%s\n",str1);
+    FD_ZERO(&t_set1);
+    FD_SET(sockfd, &t_set1);
+ 
+    while(1){
+        sleep(2);
+        tv.tv_sec= 0;
+        tv.tv_usec= 0;
+        h= 0;
+        printf("--------------->1\n");
+        h= select(sockfd +1, &t_set1, NULL, NULL, &tv);
+        printf("--------------->2\n");
+ 
+        
+        if (h < 0) {
+            close(sockfd);
+            printf("在读取数据报文时SELECT检测到异常，该异常导致线程终止！\n");
+            return -1;
+        }
+ 
+        if (h > 0){
+            memset(buf, 0, 1024);
+            i= read(sockfd, buf,1024 );
+            if (i<0){
+                close(sockfd);
+                printf("读取数据报文时发现远端关闭，该线程终止！\n");
+                return -1;
+            }
+        }
+        
+            printf("********1********\n"); 
+            printf("%s\n", buf);
+            return buf;
+            /*printf("*********1*******\n");
+
+            char *c = strtok(buf,"\n");
+            while(c)
+            {
+                ps[t++] = c;
+                c = strtok(NULL,"\n");
+                
+            }
+            for(j =0 ;j<t;j++)
+            {
+                printf("%s\n",ps[j]);
+              }*/
+    }
+    close(sockfd);
+ 
+ 
+//    return 0;
+}
