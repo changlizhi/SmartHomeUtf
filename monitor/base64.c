@@ -1,212 +1,255 @@
-#include <ctype.h>
+/**
+ *  base64编码、解码实现
+ *       C语言源代码
+ *
+ *   注意：请使用gcc编译
+ *
+ *             叶剑飞
+ *
+ *
+ *
+ *  使用说明：
+ *      命令行参数说明：若有“-d”参数，则为base64解码，否则为base64编码。
+ *                      若有“-o”参数，后接文件名，则输出到标准输出文件。
+ *      输入来自标准输入stdin，输出为标准输出stdout。可重定向输入输出流。
+ *
+ *        base64编码：输入任意二进制流，读取到文件读完了为止（键盘输入则遇到文件结尾符为止）。
+ *                    输出纯文本的base64编码。
+ *
+ *        base64解码：输入纯文本的base64编码，读取到文件读完了为止（键盘输入则遇到文件结尾符为止）。
+ *                    输出原来的二进制流。
+ *
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <syslog.h>
+#include <unistd.h>
+#include <io.h>
+#include <fcntl.h>
+#include <stdbool.h>
 
-#define BAD     -1
+#ifndef MAX_PATH
+#define MAX_PATH 256
+#endif
 
-#define INVALID_ARG -1
-#define WRONG_FORMAT    -2
-#define OUTPUT_OVERFLOW -3
+const char * base64char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-static const char base64digits[] = // characters used for base64 code
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+char * base64_encode( const unsigned char * bindata, char * base64, int binlength )
+{
+    int i, j;
+    unsigned char current;
 
-static const char base64val[] = {// base64 alphabet
-    BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD,
-    BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD,
-    BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, 62, BAD, BAD, BAD, 63,
-    52, 53, 54, 55, 56, 57, 58, 59, 60, 61, BAD, BAD, BAD, BAD, BAD, BAD,
-    BAD, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-    15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, BAD, BAD, BAD, BAD, BAD,
-    BAD, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-    41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, BAD, BAD, BAD, BAD, BAD
-};
+    for ( i = 0, j = 0 ; i < binlength ; i += 3 )
+    {
+        current = (bindata[i] >> 2) ;
+        current &= (unsigned char)0x3F;
+        base64[j++] = base64char[(int)current];
 
-#define ENCODE64(c)     (((c) & 0xC0) ? BAD : base64digits[(int)c])
-#define DECODE64(c)     (((c) & 0x80) ? BAD : base64val[(int)c])
-//~#define DECODE64(c)     (isascii(c) ? base64val[c] : BAD)
+        current = ( (unsigned char)(bindata[i] << 4 ) ) & ( (unsigned char)0x30 ) ;
+        if ( i + 1 >= binlength )
+        {
+            base64[j++] = base64char[(int)current];
+            base64[j++] = '=';
+            base64[j++] = '=';
+            break;
+        }
+        current |= ( (unsigned char)(bindata[i+1] >> 4) ) & ( (unsigned char) 0x0F );
+        base64[j++] = base64char[(int)current];
 
-/*************************************************
-Function:       ascii_to_base64
-Description:    encodes string from ascii to base64
-Input:          const char *in: the input string (NIL-terminated)
-int inlen: length of input string
-int maxlen: the output buffer size limit, 0 to ignore
-Output:         unsigned char *out: decoded output string
-Return:         length of output string on successful
-less than 0 on error occur, then the output is invalid
-Others:
- *************************************************/
-int base64_encode(char *out, const unsigned char *in, int inlen, int maxlen) {
-    int outlen = 0;
-    char *out_org = out;
-    memset(out, 0x00, maxlen);
+        current = ( (unsigned char)(bindata[i+1] << 2) ) & ( (unsigned char)0x3C ) ;
+        if ( i + 2 >= binlength )
+        {
+            base64[j++] = base64char[(int)current];
+            base64[j++] = '=';
+            break;
+        }
+        current |= ( (unsigned char)(bindata[i+2] >> 6) ) & ( (unsigned char) 0x03 );
+        base64[j++] = base64char[(int)current];
 
-    // check if arguments valid
-    if (!out || !in) {
-        return INVALID_ARG;
+        current = ( (unsigned char)bindata[i+2] ) & ( (unsigned char)0x3F ) ;
+        base64[j++] = base64char[(int)current];
     }
-
-    // encode each three ascii characters
-    for (; inlen >= 3; inlen -= 3, in += 3) {
-        // update output length and check overflow
-        outlen += 4;
-        if (outlen >= maxlen && maxlen) {
-            // use >= because there must have a '\0'
-            *out_org = '\0';
-            return OUTPUT_OVERFLOW;
-        }
-        if ((*out++ = ENCODE64((in[0] >> 2) & 0x3F)) == BAD) {
-            *out_org = '\0';
-            return WRONG_FORMAT;
-        }
-        if ((*out++ = ENCODE64(((in[0] << 4) & 0x30) | ((in[1] >> 4) & 0x0F))) == BAD) {
-            *out_org = '\0';
-            return WRONG_FORMAT;
-        }
-        if ((*out++ = ENCODE64(((in[1] << 2) & 0x3C) | ((in[2] >> 6) & 0x03))) == BAD) {
-            *out_org = '\0';
-            return WRONG_FORMAT;
-        }
-        if ((*out++ = ENCODE64(in[2] & 0x3F)) == BAD) {
-            *out_org = '\0';
-            return WRONG_FORMAT;
-        }
-    }
-
-    // encode tail-fragment if exist
-    if (inlen > 0) {
-        char fragment;
-
-        // update output length and check overflow
-        outlen += 4;
-        if (outlen >= maxlen && maxlen) {
-            *out_org = '\0';
-            return OUTPUT_OVERFLOW;
-        }
-
-        if ((*out++ = ENCODE64((in[0] >> 2) & 0x3F)) == BAD) {
-            *out_org = '\0';
-            return WRONG_FORMAT;
-        }
-        fragment = (in[0] << 4) & 0x30;
-        if (inlen > 1) {
-            fragment |= (in[1] >> 4) & 0x0F;
-        }
-        if ((*out++ = ENCODE64(fragment)) == BAD) {
-            *out_org = '\0';
-            return WRONG_FORMAT;
-        }
-        if (inlen < 2) {
-            *out++ = '=';
-        } else {
-            if ((*out++ = ENCODE64((in[1] << 2) & 0x3C)) == BAD) {
-                *out_org = '\0';
-                return WRONG_FORMAT;
-            }
-        }
-        *out++ = '=';
-    }
-
-    // terminate the output string
-    *out = '\0';
-    return outlen;
+    base64[j] = '\0';
+    return base64;
 }
 
+int base64_decode( const char * base64, unsigned char * bindata )
+{
+    int i, j;
+    unsigned char k;
+    unsigned char temp[4];
+    for ( i = 0, j = 0; base64[i] != '\0' ; i += 4 )
+    {
+        memset( temp, 0xFF, sizeof(temp) );
+        for ( k = 0 ; k < 64 ; k ++ )
+        {
+            if ( base64char[k] == base64[i] )
+                temp[0]= k;
+        }
+        for ( k = 0 ; k < 64 ; k ++ )
+        {
+            if ( base64char[k] == base64[i+1] )
+                temp[1]= k;
+        }
+        for ( k = 0 ; k < 64 ; k ++ )
+        {
+            if ( base64char[k] == base64[i+2] )
+                temp[2]= k;
+        }
+        for ( k = 0 ; k < 64 ; k ++ )
+        {
+            if ( base64char[k] == base64[i+3] )
+                temp[3]= k;
+        }
 
-/*************************************************
-Function:       base64_to_ascii
-Description:    decodes string from base64 to ascii
-Input:          const char *in: the input string (NIL-terminated)
-int inlen: length of input string
-int maxlen: the output buffer size limit, 0 to ignore
-Output:         unsigned char *out: decoded output string
-Return:         length of output string on successful
-less than 0 on error occur, then the output is invalid
-Others:
- *************************************************/
-//int base64_decode(unsigned char *out, const unsigned char *in, int inlen, int maxlen) {
-int base64_decode(unsigned char *out, unsigned char *in, int inlen, int maxlen) {
-    //~int inlen = strlen (in);
-    int outlen = 0;
-    int over = 0; // decode over flag
-    register char digit0, digit1, digit2, digit3;
-    unsigned char *out_org = out;
-    memset(out, 0x00, maxlen);
+        bindata[j++] = ((unsigned char)(((unsigned char)(temp[0] << 2))&0xFC)) |
+                ((unsigned char)((unsigned char)(temp[1]>>4)&0x03));
+        if ( base64[i+2] == '=' )
+            break;
 
-    // check if arguments valid
-    if (!out || !in) {
-        return INVALID_ARG;
+        bindata[j++] = ((unsigned char)(((unsigned char)(temp[1] << 4))&0xF0)) |
+                ((unsigned char)((unsigned char)(temp[2]>>2)&0x0F));
+        if ( base64[i+3] == '=' )
+            break;
+
+        bindata[j++] = ((unsigned char)(((unsigned char)(temp[2] << 6))&0xF0)) |
+                ((unsigned char)(temp[3]&0x3F));
     }
+    return j;
+}
 
-    // decode each four base64 characters
-    for (; inlen >= 4; inlen -= 4, in += 4) {
-        // update output length and check overflow
-        if (++outlen >= maxlen && maxlen) {
-            *out_org = '\0';
-            return OUTPUT_OVERFLOW;
-        }
+void encode(FILE * fp_in, FILE * fp_out)
+{
+    unsigned char bindata[2050];
+    char base64[4096];
+    size_t bytes;
+    while ( !feof( fp_in ) )
+    {
+        bytes = fread( bindata, 1, 2049, fp_in );
+        base64_encode( bindata, base64, bytes );
+        fprintf( fp_out, "%s", base64 );
+    }
+}
 
-        if ((digit0 = DECODE64(in[0])) == BAD) {
-            *out_org = '\0';
-            return WRONG_FORMAT;
-        }
-        if ((digit1 = DECODE64(in[1])) == BAD) {
-            *out_org = '\0';
-            return WRONG_FORMAT;
-        }
-        *out++ = ((digit0 << 2) & 0xFC) | ((digit1 >> 4) & 0x03);
-
-        if (in[2] != '=') {
-            // update output length and check overflow
-            if (++outlen >= maxlen && maxlen) {
-                *out_org = '\0';
-                return OUTPUT_OVERFLOW;
-            }
-
-            if ((digit2 = DECODE64(in[2])) == BAD) {
-                *out_org = '\0';
-                return WRONG_FORMAT;
-            }
-            *out++ = ((digit1 << 4) & 0xF0) | ((digit2 >> 2) & 0x0F);
-
-            if (in[3] != '=') {
-                // update output length and check overflow
-                if (++outlen >= maxlen && maxlen) {
-                    *out_org = '\0';
-                    return OUTPUT_OVERFLOW;
-                }
-
-                if ((digit3 = DECODE64(in[3])) == BAD) {
-                    *out_org = '\0';
-                    return WRONG_FORMAT;
-                }
-                *out++ = ((digit2 << 6) & 0xC0) | (digit3 & 0x3F);
-            } else {
-                over = 1;
+void decode(FILE * fp_in, FILE * fp_out)
+{
+    int i;
+    unsigned char bindata[2050];
+    char base64[4096];
+    size_t bytes;
+    while ( !feof( fp_in ) )
+    {
+        for ( i = 0 ; i < 2048 ; i ++ )
+        {
+            base64[i] = fgetc(fp_in);
+            if ( base64[i] == EOF )
                 break;
-            }
-        } else {
-            over = 1;
+            else if ( base64[i] == '\n' || base64[i] == '\r' )
+                i --;
+        }
+        bytes = base64_decode( base64, bindata );
+        fwrite( bindata, bytes, 1, fp_out );
+    }
+}
+
+void help(const char * filepath)
+{
+    fprintf( stderr, "Usage: %s [-d] [input_filename] [-o output_filepath]\n", filepath );
+    fprintf( stderr, "\t-d\tdecode data\n" );
+    fprintf( stderr, "\t-o\toutput filepath\n\n" );
+}
+
+int main(int argc, char * argv[])
+{
+    FILE * fp_input = NULL;
+    FILE * fp_output = NULL;
+    bool isencode = true;
+    bool needHelp = false;
+    int opt = 0;
+    char input_filename[MAX_PATH] = "";
+    char output_filename[MAX_PATH] = "";
+
+    opterr = 0;
+    while ( (opt = getopt(argc, argv, "hdo:")) != -1 )
+    {
+        switch(opt)
+        {
+        case 'd':
+            isencode = false;
+            break;
+        case 'o':
+            strncpy(output_filename, optarg, sizeof(output_filename));
+            output_filename[sizeof(output_filename)-1] = '\0';
+            break;
+        case 'h':
+            needHelp = true;
+            break;
+        default:
+            fprintf(stderr, "%s: invalid option -- %c\n", argv[0], optopt);
+            needHelp = true;
             break;
         }
     }
-
-    // there cannt have tail-fragment except after '='
-    if (!over && inlen > 0) {
-        *out_org = '\0';
-        return WRONG_FORMAT;
+    if ( optind < argc )
+    {
+        strncpy(input_filename, argv[optind], sizeof(input_filename));
+        input_filename[sizeof(input_filename)-1] = '\0';
     }
 
-    // terminate the output string
-    *out = '\0';
+    if (needHelp)
+    {
+        help(argv[0]);
+        return EXIT_FAILURE;
+    }
 
-    return outlen;
+    if ( !strcmp(input_filename, "") )
+    {
+        fp_input = stdin;
+        if (isencode)
+            _setmode( _fileno(stdin), _O_BINARY );
+    }
+    else
+    {
+        if (isencode)
+            fp_input = fopen(input_filename, "rb");
+        else
+            fp_input = fopen(input_filename, "r");
+    }
+    if ( fp_input == NULL )
+    {
+        fprintf(stderr, "Input file open error\n");
+        return EXIT_FAILURE;
+    }
+
+    if ( !strcmp(output_filename, "") )
+    {
+        fp_output = stdout;
+        if (!isencode)
+            _setmode( _fileno(stdout), _O_BINARY );
+    }
+    else
+    {
+        if (isencode)
+            fp_output = fopen(output_filename, "w");
+        else
+            fp_output = fopen(output_filename, "wb");
+    }
+    if ( fp_output == NULL )
+    {
+        fclose(fp_input);
+        fp_input = NULL;
+        fprintf(stderr, "Output file open error\n");
+        return EXIT_FAILURE;
+    }
+
+    if (isencode)
+        encode(fp_input, fp_output);
+    else
+        decode(fp_input, fp_output);
+    fclose(fp_input);
+    fclose(fp_output);
+    fp_input = fp_output = NULL;
+    return EXIT_SUCCESS;
 }
-int main(int argc,char *argv[]){
-    unsigned char * out = "";
-    unsigned char * in = "aHR0cDovL3Bpbmx2LmFtY2hpcy5jb20vbWhzeV93ZWIvbGVpeGluZy95aW5waW4xLm1wMy50YXIuZ3o=";
-    int inlen = 80;
-    base64_decode(out,in,inlen,0)
-    return 0
-}
+
