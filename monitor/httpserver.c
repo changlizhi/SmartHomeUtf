@@ -1,76 +1,109 @@
 #include <stdio.h>
-#include <errno.h>
-#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+#include <errno.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <sys/types.h>
+#include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 
+// --------------------------------------- 辅助参数宏 ----------------------------------------------
+/*
+ * c 如果是空白字符返回 true, 否则返回false
+ * c : 必须是 int 值,最好是 char 范围
+ */
+#define sh_isspace(c) \
+    ((c==' ')||(c>='\t'&&c<='\r'))
+
+//4.0 控制台打印错误信息, fmt必须是双引号括起来的宏
 #define CERR(fmt, ...) \
-    fprintf(stderr, "[%s:%s:%d][errno %d:%s]" fmt "\n",\
-        __FILE__, __func__, __LINE__, errno, strerror(errno), ##__VA_ARGS__)
+    fprintf(stderr,"[%s:%s:%d][error %d:%s]" fmt "\r\n",\
+         __FILE__, __func__, __LINE__, errno, strerror(errno),##__VA_ARGS__)
 
+//4.1 控制台打印错误信息并退出, t同样fmt必须是 ""括起来的字符串常量
 #define CERR_EXIT(fmt,...) \
-    CERR(fmt, ##__VA_ARGS__), exit(EXIT_FAILURE)
+    CERR(fmt,##__VA_ARGS__),exit(EXIT_FAILURE)
 
-#define CERR_IF(code) \
+//4.3 if 的 代码检测
+#define IF_CHECK(code)    \
     if((code) < 0) \
         CERR_EXIT(#code)
 
-//
-// getfdline - 读取文件描述符 fd 一行的内容,保存在buf中,返回读取内容长度
-// fd        : 文件描述符
-// buf        : 保存的内容
-// sz        : buf 的大小
-// return    : 返回读取的长度
-//
+// --------------------------------------- 辅助变量宏 和 声明 ------------------------------------------
+
+// char[]缓冲区大小
+#define _INT_BUF (1024)
+// listen监听队列的大小
+#define _INT_LIS (7)
+
+/*
+ * 读取文件描述符 fd 一行的内容,保存在buf中,返回读取内容长度
+ * fd        : 文件描述符
+ * buf        : 保存的内容
+ * sz        : buf 的大小
+ *            : 返回读取的长度
+ */
 int getfdline(int fd, char buf[], int sz);
 
-// 返回400 请求解析失败, 客户端代码错误
-void response_400(int cfd);
+// 返回400 请求解析失败,客户端代码错误
+extern inline void response_400(int cfd);
+
 // 返回404 文件内容, 请求文件没有找见
-void response_404(int cfd);
+extern inline void response_404(int cfd);
+
 // 返回501 错误, 不支持的请求
-void response_501(int cfd);
+extern inline void response_501(int cfd);
+
 // 服务器内部错误,无法处理等
-void response_500(int cfd);
+extern inline void response_500(int cfd);
+
 // 返回200 请求成功 内容, 后面可以加上其它参数,处理文件输出
-void response_200(int cfd);
-// 服务器返回请求的文件内容
-void response_file(int cfd, const char * path);
+extern inline void response_200(int cfd);
 
-//
-// request_start - 启动一个httpd监听端口, 使用随机端口
-// pport     : 输出参数和输出参数, 如果传入NULL, 将不返回自动分配的端口
-// return    : 返回启动的文件描述符
-//
-int request_start(uint16_t * pport);
+/*
+ * 将文件 发送给客户端
+ * cfd        : 客户端文件描述符
+ * path        : 发送的文件路径
+ */
+void response_file(int cfd, const char* path);
 
-// 在客户端链接过来, pthread 多线程处理的函数
-void * request_accept(void * arg);
+/*
+ * 返回启动的服务器描述符(句柄), 这里没有采用8080端口,防止冲突,用了随机端口
+ * pport     : 输出参数和输出参数, 如果传入NULL,将不返回自动分配的端口
+ *             : 返回 启动的文件描述符
+ */
+int serstart(uint16_t* pport);
 
-//
-// request_cgi - 处理客户端的http请求.
-// cfd        : 客户端文件描述符
-// path        : 请求的文件路径
-// type        : 请求类型,默认是POST,其它是GET
-// query    : 请求发送的过来的数据, url ? 后面那些数据
-// return    : void
-//
-void request_cgi(int cfd, const char * path, const char * type, const char * query);
+/*
+ * 在客户端链接过来,多线程处理的函数
+ * arg        : 传入的参数, 客户端文件描述符 (int)arg
+ *             : 返回处理结果,这里默认返回 NULL
+ */
+void* request_accept(void* arg);
 
-//
-// 主逻辑,启动服务,可以做成守护进程.
-// 具体的实现逻辑, 启动小型玩乐级别的httpd 服务
-//
-int main(int argc, char * argv[]) {
-    uint16_t port = 0;
+/*
+ * 处理客户端的http请求.
+ * cfd        : 客户端文件描述符
+ * path        : 请求的文件路径
+ * type        : 请求类型,默认是POST,其它是GET
+ * query    : 请求发送的过来的数据, url ? 后面那些数据
+ */
+void request_cgi(int cfd, const char* path, const char* type, const char* query);
+
+/*
+ * 主逻辑,启动服务,可以做成守护进程.
+ * 具体的实现逻辑, 启动小型玩乐级别的httpd 服务
+ */
+int main(int argc, char* argv[])
+{
     pthread_attr_t attr;
-    int sfd = request_start(&port);
+    uint16_t port = 0;
+    int sfd = serstart(&port);
 
     printf("httpd running on port %u.\n", port);
     // 初始化线程属性
@@ -78,23 +111,36 @@ int main(int argc, char * argv[]) {
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
     for(;;){
         pthread_t tid;
-        int cfd = accept(sfd, NULL, NULL);
+        struct sockaddr_in caddr;
+        socklen_t clen = sizeof caddr;
+        int cfd = accept(sfd, (struct sockaddr*)&caddr, &clen);
         if(cfd < 0){
             CERR("accept sfd = %d is error!", sfd);
             break;
         }
-        if(pthread_create(&tid, &attr, request_accept, (void *)cfd) < 0)
+        if(pthread_create(&tid, &attr, request_accept, (void*)cfd) < 0)
             CERR("pthread_create run is error!");
     }
     // 销毁吧, 一切都结束了
     pthread_attr_destroy(&attr);
     close(sfd);
-    return EXIT_SUCCESS;
+    return 0;
 }
 
+// ----------------------------------------- 具体的函数实现过程 ------------------------------------------------
+
+/*
+ * 读取文件描述符 fd 一行的内容,保存在buf中,返回读取内容长度
+ * fd        : 文件描述符
+ * buf        : 保存的内容
+ * sz        : buf 的大小
+ *            : 返回读取的长度
+ */
 int
-getfdline(int fd, char buf[], int sz) {
-    char c, * tp = buf;
+getfdline(int fd, char buf[], int sz)
+{
+    char* tp = buf;
+    char c;
 
     --sz;
     while((tp-buf)<sz){
@@ -113,10 +159,11 @@ getfdline(int fd, char buf[], int sz) {
     return tp - buf;
 }
 
+// 返回400 请求解析失败,客户端代码错误
 inline void
-response_400(int cfd) {
-    const char * estr =
-    "HTTP/1.0 400 BAD REQUEST\r\n"
+response_400(int cfd)
+{
+    const char* estr = "HTTP/1.0 400 BAD REQUEST\r\n"
     "Server: wz simple httpd 1.0\r\n"
     "Content-Type: text/html\r\n"
     "\r\n"
@@ -125,10 +172,11 @@ response_400(int cfd) {
     write(cfd, estr, strlen(estr));
 }
 
+// 返回404 文件内容, 请求文件没有找见
 inline void
-response_404(int cfd) {
-    const char * estr =
-    "HTTP/1.0 404 NOT FOUND\r\n"
+response_404(int cfd)
+{
+    const char* estr = "HTTP/1.0 404 NOT FOUND\r\n"
     "Server: wz simple httpd 1.0\r\n"
     "Content-Type: text/html\r\n"
     "\r\n"
@@ -137,13 +185,15 @@ response_404(int cfd) {
     "<body><p>404: 估计是回不来了</p></body>"
     "</html>";
 
+    //开始发送数据
     write(cfd, estr, strlen(estr));
 }
 
+// 返回501 错误, 请求解析失败,不支持的请求
 inline void
-response_501(int cfd) {
-    const char * estr =
-    "HTTP/1.0 501 Method Not Implemented\r\n"
+response_501(int cfd)
+{
+    const char* estr = "HTTP/1.0 501 Method Not Implemented\r\n"
     "Server: wz simple httpd 1.0\r\n"
     "Content-Type: text/html\r\n"
     "\r\n"
@@ -152,13 +202,16 @@ response_501(int cfd) {
     "<body><p>too young too simple, 年轻人别总想弄出个大新闻.</p></body>"
     "</html>";
 
+    //这里还有一个好的做法是将这些内容定义在文件中输出文件
     write(cfd, estr, strlen(estr));
 }
 
+
+// 服务器内部错误,无法处理等
 inline void
-response_500(int cfd) {
-    const char * estr =
-    "HTTP/1.0 500 Internal Server Error\r\n"
+response_500(int cfd)
+{
+    const char* estr = "HTTP/1.0 500 Internal Server Error\r\n"
     "Server: wz simple httpd 1.0\r\n"
     "Content-Type: text/html\r\n"
     "\r\n"
@@ -170,94 +223,110 @@ response_500(int cfd) {
     write(cfd, estr, strlen(estr));
 }
 
+// 返回200 请求成功 内容, 后面可以加上其它参数,处理文件输出
 inline void
-response_200(int cfd) {
-    const char * estr =
-    "HTTP/1.0 200 OK\r\n"
+response_200(int cfd)
+{
+    // 打印返回200的报文头
+    const char* str = "HTTP/1.0 200 OK\r\n"
     "Server: wz simple httpd 1.0\r\n"
     "Content-Type: text/html\r\n"
     "\r\n";
 
-    write(cfd, estr, strlen(estr));
+    write(cfd, str, strlen(str));
 }
 
+/*
+ * 将文件 发送给客户端
+ * cfd        : 客户端文件描述符
+ * path        : 发送的文件路径
+ */
 void
-response_file(int cfd, const char * path) {
-    char buf[BUFSIZ];
-    FILE * txt = fopen(path, "r");
+response_file(int cfd, const char* path)
+{
+    FILE* txt;
+    char buf[_INT_BUF];
 
-    // 如果文件解析错误, 给它个404
-    if(NULL == txt)
+    // 读取报文头,就是过滤
+    while(getfdline(cfd, buf, sizeof buf)>0 && strcmp("\n", buf))
+        ;
+    // 这里开始处理 文件内容
+    if((txt = fopen(path, "r")) == NULL) //文件解析错误,给它个404
         response_404(cfd);
     else{
-        //发送给200的报文头过去, 并发送文件内容过去
-        response_200(cfd);
+        response_200(cfd); //发送给200的报文头过去
+        // 先判断文件内容存在
         while(!feof(txt) && fgets(buf, sizeof buf, txt))
             write(cfd, buf, strlen(buf));
-        fclose(txt);
     }
+    fclose(txt);
 }
 
+/*
+ * 返回启动的服务器描述符(句柄)
+ * pport     : 输出参数和输出参数, 如果传入NULL,将不返回自动分配的端口
+ *             : 返回 启动的文件描述符
+ */
 int
-request_start(uint16_t * pport) {
+serstart(uint16_t* pport)
+{
     int sfd;
     struct sockaddr_in saddr = { AF_INET };
 
-    CERR_IF(sfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP));
-    // 监测一下是否要更换端口, 并绑定一下端口信息
-    saddr.sin_port = pport && *pport ? htons(*pport) : 0;
-    CERR_IF(bind(sfd, (struct sockaddr *)&saddr, sizeof saddr));
-
-    if(pport && !*pport) {
+    IF_CHECK(sfd = socket(PF_INET, SOCK_STREAM, 0));
+    saddr.sin_port = !pport || !*pport ? 0 : htons(*pport);
+    saddr.sin_addr.s_addr = INADDR_ANY;
+    // 绑定一下端口信息
+    IF_CHECK(bind(sfd, (struct sockaddr*)&saddr, sizeof saddr));
+    if(pport && !*pport){
         socklen_t clen = sizeof saddr;
-        CERR_IF(getsockname(sfd, (struct sockaddr*)&saddr, &clen));
+        IF_CHECK(getsockname(sfd, (struct sockaddr*)&saddr, &clen));
         *pport = ntohs(saddr.sin_port);
     }
-
     // 开启监听任务
-    CERR_IF(listen(sfd, SOMAXCONN));
-
+    IF_CHECK(listen(sfd, _INT_LIS));
     return sfd;
 }
 
-void *
-request_accept(void * arg) {
-    char buf[BUFSIZ], path[BUFSIZ >> 1], type[BUFSIZ >> 2];
-    char * lt, * rt, * query = NULL, * nb = buf;
-    int iscgi, cfd = (int)arg;
+/*
+ * 在客户端链接过来,多线程处理的函数
+ * arg        : 传入的参数, 客户端文件描述符 (int)arg
+ *             : 返回处理结果,这里默认返回 NULL
+ */
+void*
+request_accept(void* arg)
+{
+    char buf[_INT_BUF], path[_INT_BUF>>1], type[_INT_BUF>>5];
+    char *lt, *rt, *query, *nb = buf;
     struct stat st;
+    int iscgi, cfd = (int)arg;
 
-    // 请求错误, 直接返回结果
-    if(getfdline(cfd, buf, sizeof buf) <= 0) {
+    if(getfdline(cfd, buf, sizeof buf) <= 0){ //请求错误
         response_501(cfd);
         close(cfd);
         return NULL;
     }
-
     // 合法请求处理
-    for(lt = type, rt = nb; !isspace(*rt) && (lt - type) < sizeof type - 1; *lt++ = *rt++)
+    for(lt=type, rt=nb; !sh_isspace(*rt) && (lt-type)< sizeof type - 1; *lt++ = *rt++)
         ;
-    *lt = '\0';
-
+    *lt = '\0'; //已经将 buf中开始不为empty 部分塞入了 type 中
     //同样处理合法与否判断, 出错了直接返回错误结果
-    if((iscgi = strcasecmp(type, "POST")) && strcasecmp(type, "GET")) {
+    if((iscgi = strcasecmp(type, "POST")) && strcasecmp(type, "GET")){
         response_501(cfd);
         close(cfd);
         return NULL;
     }
-
     // 在buf中 去掉空字符
-    while(*rt && isspace(*rt))
+    while(*rt && sh_isspace(*rt))
         ++rt;
-
-    // 这里得到路径信息, query url路径拼接
+    // 这里得到路径信息
     *path = '.';
-    for(lt = path + 1; (lt - path) < sizeof path - 1 && !isspace(*rt); *lt++ = *rt++)
+    for(lt = path + 1; (lt-path)<sizeof path - 1 && !sh_isspace(*rt); *lt++ = *rt++)
         ;
-    *lt = '\0';
+    *lt = '\0'; //query url路径就拼接好了
 
-    // 单独处理 get 获取 ? 后面数据, 不是 POST那就是 GET
-    if(iscgi != 0) {
+    //单独处理 get 获取 ? 后面数据, 不是POST那就是GET
+    if(iscgi != 0){
         for(query = path; *query && *query != '?'; ++query)
             ;
         if(*query == '?'){
@@ -267,16 +336,17 @@ request_accept(void * arg) {
     }
 
     // type , path 和 query 已经构建好了
-    if(stat(path, &st) < 0) {
+    if(stat(path, &st) < 0){
+        while(getfdline(cfd, buf, sizeof buf)>0 && strcmp("\n", buf))// 读取内容直到结束
+            ;
         response_404(cfd);
         close(cfd);
         return NULL;
     }
-
-    // 合法情况, 执行, 写入, 读取权限. 监测是否是 CGI程序
-    if ((st.st_mode & S_IXUSR) || (st.st_mode & S_IXGRP) || (st.st_mode & S_IXOTH))
+    // 合法情况, 执行,写入,读取权限
+    if ((st.st_mode & S_IXUSR) ||(st.st_mode & S_IXGRP) ||(st.st_mode & S_IXOTH))
         iscgi = 0;
-    if(!iscgi)
+    if(iscgi) //没有cgi
         response_file(cfd, path);
     else
         request_cgi(cfd, path, type, query);
@@ -285,57 +355,63 @@ request_accept(void * arg) {
     return NULL;
 }
 
+/*
+ * 处理客户端的http请求.
+ * cfd        : 客户端文件描述符
+ * path        : 请求的文件路径
+ * type        : 请求类型,默认是POST,其它是GET
+ * query    : 请求发送的过来的数据, url ? 后面那些数据
+ */
 void
-request_cgi(int cfd, const char * path, const char * type, const char *  query) {
-    pid_t pid;
-    char c, buf[BUFSIZ];
+request_cgi(int cfd, const char* path, const char* type, const char* query)
+{
+    char buf[_INT_BUF];
     int pocgi[2], picgi[2];
-    int i, contlen = -1; // 报文长度
+    pid_t pid;
+    int contlen = -1; //报文长度
+    char c;
 
     if(strcasecmp(type, "POST") == 0){
-        while(getfdline(cfd, buf, sizeof buf) > 0 && strcmp("\n", buf)){
+        while(getfdline(cfd, buf, sizeof buf)>0 && strcmp("\n", buf)){
             buf[15] = '\0';
             if(!strcasecmp(buf, "Content-Length:"))
                 contlen = atoi(buf + 16);
         }
-        if(contlen == -1) { //错误的报文,直接返回错误结果
+        if(contlen == -1){ //错误的报文,直接返回错误结果
             response_400(cfd);
             return;
         }
     }
-    else {
-        // 读取报文头,就是过滤, 后面就假定是 GET
-        while(getfdline(cfd, buf, sizeof buf) > 0 && strcmp("\n", buf))
+    else{ // 读取报文头,就是过滤, 后面就假定是 GET
+        while(getfdline(cfd, buf, sizeof buf)>0 && strcmp("\n", buf))
             ;
     }
 
     //这里处理请求内容, 先处理错误信息
-    if(pipe(pocgi) < 0) {
+    if(pipe(pocgi) < 0){
         response_500(cfd);
         return;
     }
-    // 管道 是 0读取, 1写入
-    if(pipe(picgi) < 0) {
+    if(pipe(picgi) < 0){ //管道 是 0读取, 1写入
         close(pocgi[0]), close(pocgi[1]);
         response_500(cfd);
         return;
     }
-    if((pid = fork()) < 0){
+    if((pid = fork())<0){
         close(pocgi[0]), close(pocgi[1]);
         close(picgi[0]), close(picgi[1]);
         response_500(cfd);
         return;
     }
-
     // 这里就是多进程处理了, 先处理子进程
     if(pid == 0) {
-        // dup2 让前者共享后者同样的文件表
-        dup2(pocgi[1], STDOUT_FILENO); // 标准输出算作 pocgi管道的写入端
-        dup2(picgi[0], STDIN_FILENO); // 标准输入做为 picgi管道的读取端
+        // dup2 让 前者共享后者同样的文件表
+        dup2(pocgi[1], STDOUT_FILENO); //标准输出算作 pocgi管道 的写入端
+        dup2(picgi[0], STDIN_FILENO); //标准输入做为picgif管道的读取端
         close(pocgi[0]);
-        close(picgi[1]);
+        close(pocgi[1]);
 
-        // 添加环境变量, 用于当前会话中
+        // 添加环境变量,用于当前会话中
         sprintf(buf, "REQUEST_METHOD=%s", type);
         putenv(buf);
         // 继续凑环境变量串,放到当前会话种
@@ -350,14 +426,14 @@ request_cgi(int cfd, const char * path, const char * type, const char *  query) 
         // 这行代码原本是不用的, 但是防止 execl执行失败, 子进程没有退出.妙招
         exit(EXIT_SUCCESS);
     }
-    // 父进程, 随便搞了, 先发送个OK
+    // 父进程, 为所欲为了,先发送个OK
     write(cfd, "HTTP/1.0 200 OK\r\n", 17);
     close(pocgi[1]);
     close(picgi[0]);
 
     if(strcasecmp(type, "POST") == 0){
-        // 将数据都写入到 picgi 管道中, 让子进程在 picgi[0]中读取 => STDIN_FILENO
-        for(i = 0; i < contlen; ++i){
+        int i; //将数据都写入到 picgi 管道中, 让子进程在 picgi[0]中读取 => STDIN_FILENO
+        for(i=0; i<contlen; ++i){
             read(cfd, &c, 1);
             write(picgi[1], &c, 1);
         }
