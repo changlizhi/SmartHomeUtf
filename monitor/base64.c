@@ -109,26 +109,30 @@ int base64_encode(const unsigned char * sourcedata, char * base64)
     return 0;
 }
 
+void ceshibianma(){
+    const unsigned char *golangdata = "aHR0cDovL3Bpbmx2LmFtY2hpcy5jb20vbWhzeV93ZWIvbGVpeGluZy95aW5waW4xLm1wMy50YXIuZ3o=";
+    const unsigned char *sourcedata = "http://pinlv.amchis.com/mhsy_web/leixing/yinpin1.mp3.tar.gz";
+    char base64[1024];
+    base64_encode(sourcedata, base64);
+    printf("c-base64-----：%s\n",base64);
+    printf("golang-base64：%s\n",golangdata);
+}
+
+void ceshijiema(){
+
+    const unsigned char *destdata = "aHR0cDovL3Bpbmx2LmFtY2hpcy5jb20vbWhzeV93ZWIvbGVpeGluZy95aW5waW4xLm1wMy50YXIuZ3o=" ;
+    const unsigned char *golangurl = "http://pinlv.amchis.com/mhsy_web/leixing/yinpin1.mp3.tar.gz" ;
+    char dedata[1024];
+    base64_decode(destdata, (unsigned char*)dedata);
+    printf("jiema----：%s", dedata);
+    printf("golangurl：%s", golangurl);
+
+}
+
 // 测试
 int main()
 {
-    const unsigned char str[] = "http://pinlv.amchis.com/mhsy_web/leixing/yinpin1.mp3.tar.gz";
-    const unsigned char dest[] = "aHR0cDovL3Bpbmx2LmFtY2hpcy5jb20vbWhzeV93ZWIvbGVpeGluZy95aW5waW4xLm1wMy50YXIuZ3o=";
-    const unsigned char *sourcedata = str ;
-    const unsigned char *destdata = dest ;
-    char base64[128];
-    base64_encode(sourcedata, base64);
-
-    printf("编码：%s\n",base64);
-    printf("预留：%s\n",destdata);
-
-    char dedata[128];
-
-    base64_decode(base64, (unsigned char*)dedata);
-
-    printf("译码：%s", dedata);
-
-    getchar();
-    getchar();
+    ceshibianma();
+    ceshijiema();
     return 0;
 }
