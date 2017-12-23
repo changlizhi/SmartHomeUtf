@@ -684,23 +684,23 @@ static void *VolumeBtn_Pressdown(void *arg)
     while (1) {
 
             gpio_get_value(GPIO_KEY_ADD,&value);
-            if(value == 0 )
-            {
-                pressaddtimes++;
-                if(pressaddtimes >400 && presssubtimes<100)
-                {
-                    //if(currentButtonState == 0)
-                    {
-                        PlayVoice("enablewifi.wav",0);
-                        sprintf(cmd,"wifi up");
-                        system(cmd);
-                        wifitodnamy();//仅供测试使用
-                        pressaddtimes = 0;
-                    }
-                }
-
-            }
-            else if(value == 1)
+//            if(value == 0 )
+//            {
+//                pressaddtimes++;
+//                if(pressaddtimes >400 && presssubtimes<100)
+//                {
+//                    //if(currentButtonState == 0)
+//                    {
+//                        PlayVoice("enablewifi.wav",0);
+//                        sprintf(cmd,"wifi up");
+//                        system(cmd);
+//                        wifitodnamy();//仅供测试使用
+//                        pressaddtimes = 0;
+//                    }
+//                }
+//
+//            }
+            if(value == 1)
             {
                 if(presssubtimes>800 && pressaddtimes >800)
                 {
